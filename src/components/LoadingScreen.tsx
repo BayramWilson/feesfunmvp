@@ -1,21 +1,11 @@
 import { useEffect, useState } from 'react';
 
 interface LoadingScreenProps {
-  onLoadingComplete: () => void;
   transactionsProcessed: number;
+  onLoadingComplete: () => void;
 }
 
-export default function LoadingScreen({ onLoadingComplete, transactionsProcessed }: LoadingScreenProps) {
-  const [progressPercentage, setProgressPercentage] = useState(0);
-  const [progress, setProgress] = useState<string>('');
-
-  useEffect(() => {
-    // Update progress based on transactions processed
-    if (transactionsProcessed > 0) {
-      setProgressPercentage(Math.min((transactionsProcessed / 100) * 100, 100));
-    }
-  }, [transactionsProcessed]);
-
+export default function LoadingScreen({ transactionsProcessed }: LoadingScreenProps) {
   return (
     <div className="max-w-2xl w-full space-y-8 relative z-10">
       {/* GIF Container */}
@@ -36,17 +26,10 @@ export default function LoadingScreen({ onLoadingComplete, transactionsProcessed
           <span className="text-xl">{transactionsProcessed} transactions</span>
         </div>
         
-        {/* Transaction Counter (replacing Progress Bar) */}
+        {/* Transaction Counter */}
         <div className="text-center text-white text-lg">
           Processed {transactionsProcessed} transactions
         </div>
-
-        {/* Progress Text */}
-        {progress && (
-          <p className="text-center text-white text-lg mt-2">
-            {progress}
-          </p>
-        )}
       </div>
     </div>
   );

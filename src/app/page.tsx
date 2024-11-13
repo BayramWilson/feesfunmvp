@@ -3,6 +3,8 @@
 import { useState, useRef } from 'react';
 import LoadingScreen from '@/components/LoadingScreen';
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState('');
   const [totalFees, setTotalFees] = useState<number | null>(null);
@@ -10,8 +12,6 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [transactionsProcessed, setTransactionsProcessed] = useState(0);
   const [progress, setProgress] = useState<string | null>(null);
-  const [pumpFunFees, setPumpFunFees] = useState<number | null>(null);
-  const [raydiumFees, setRaydiumFees] = useState<number | null>(null);
   const [dexFees, setDexFees] = useState<number | null>(null);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -26,13 +26,12 @@ export default function Home() {
     setLoading(true);
     setError(null);
     let totalFeesAccumulator = 0;
-    let pumpFunFeesAccumulator = 0;
     let raydiumFeesAccumulator = 0;
     const startTime = Date.now();
     const TIME_LIMIT = 180000; // 1 minute in milliseconds
     const BATCH_SIZE = 40;
     let before: string | undefined = undefined;
-    let processedTxs = new Set(); // Track unique transactions
+    const processedTxs = new Set(); // Track unique transactions
     let retry = false; // Track if we should retry once
 
     // Actual program IDs for pump.fun and raydium
@@ -104,7 +103,7 @@ export default function Home() {
 
             // Check if the transaction involves pump.fun or raydium
             if (tx.program_ids.includes(PUMP_FUN_PROGRAM_ID)) {
-              pumpFunFeesAccumulator += fee;
+              raydiumFeesAccumulator += fee;
             } else if (tx.program_ids.includes(RAYDIUM_PROGRAM_ID)) {
               raydiumFeesAccumulator += fee;
             }
@@ -135,13 +134,10 @@ export default function Home() {
       }
 
       console.log('Final total fees:', totalFeesAccumulator / 1e9);
-      console.log('Pump.fun fees:', pumpFunFeesAccumulator / 1e9);
       console.log('Raydium fees:', raydiumFeesAccumulator / 1e9);
       console.log('Total unique transactions processed:', processedTxs.size);
 
-      setPumpFunFees(pumpFunFeesAccumulator / 1e9);
-      setRaydiumFees(raydiumFeesAccumulator / 1e9);
-      setDexFees((pumpFunFeesAccumulator + raydiumFeesAccumulator) / 1e9);
+      setDexFees((raydiumFeesAccumulator) / 1e9);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       console.error('Fetch error:', err);
