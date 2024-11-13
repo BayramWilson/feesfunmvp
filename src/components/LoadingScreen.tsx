@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { } from 'react';
 
 interface LoadingScreenProps {
   transactionsProcessed: number;
