@@ -1,16 +1,39 @@
-import { } from 'react';
+import { useEffect, useState } from 'react';
 
 interface LoadingScreenProps {
   transactionsProcessed: number;
   onLoadingComplete: () => void;
 }
 
-export default function LoadingScreen({ transactionsProcessed }: LoadingScreenProps) {
+export default function LoadingScreen({ transactionsProcessed, onLoadingComplete }: LoadingScreenProps) {
+  const [percentage, setPercentage] = useState(0);
+
+  useEffect(() => {
+    const duration = 180000; // 3 minutes in milliseconds
+    const interval = 100; // Update every 100ms (increased from 50ms)
+    const steps = duration / interval;
+    const incrementPerStep = 100 / steps;
+    
+    let currentStep = 0;
+    const timer = setInterval(() => {
+      setPercentage(prev => {
+        const newValue = Math.min(prev + incrementPerStep, 100);
+        if (newValue >= 100) {
+          clearInterval(timer);
+          onLoadingComplete();
+        }
+        return newValue;
+      });
+      currentStep++;
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [onLoadingComplete]);
+
   return (
     <div className="max-w-2xl w-full space-y-8 relative z-10">
-      {/* GIF Container */}
-      <div className="rounded-lg overflow-hidden bg-gray-800/80 p-4">
-        <div className="w-full h-auto rounded-lg text-center p-8">
+      <div className="rounded-lg overflow-hidden p-[2px] bg-gradient-to-br from-[#9945FF] to-[#14F195]">
+        <div className="w-full h-auto rounded-lg text-center bg-black">
           <img 
             src="/assets/videos/TRUMP VIDEO/trump.gif"
             alt="Loading Animation"
@@ -19,16 +42,18 @@ export default function LoadingScreen({ transactionsProcessed }: LoadingScreenPr
         </div>
       </div>
 
-      {/* Progress Section */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center text-white">
-          <span className="text-xl">Checking your wallet...</span>
-          <span className="text-xl">{transactionsProcessed} transactions</span>
+      <div className="text-center space-y-4">
+        <div className="inline-block text-2xl font-mondwest bg-gradient-to-br from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
+          Checking your wallet... {Math.floor(percentage)}%
         </div>
-        
-        {/* Transaction Counter */}
-        <div className="text-center text-white text-lg">
-          Processed {transactionsProcessed} transactions
+
+        <div className="w-full h-8 rounded-full p-[1px] bg-gradient-to-r from-[#9945FF] to-[#14F195]">
+          <div className="w-full h-full bg-gray-800 rounded-full">
+            <div 
+              className="h-full rounded-full bg-gradient-to-r from-[#9945FF] to-[#14F195] transition-all duration-300"
+              style={{ width: `${percentage}%` }}
+            />
+          </div>
         </div>
       </div>
     </div>

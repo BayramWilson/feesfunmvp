@@ -1,18 +1,26 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss'
 
-export default {
+const config: Config = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
+      fontFamily: {
+        mondwest: ['var(--font-mondwest)', 'sans-serif'],
+      },
+      backgroundImage: {
+        'solana-gradient': 'linear-gradient(to right, #9945FF, #14F195)',
+      },
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        'solana-purple': '#9945FF',
+        'solana-green': '#14F195',
       },
     },
   },
   plugins: [],
-} satisfies Config;
+}
+
+export default config

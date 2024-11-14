@@ -2,10 +2,15 @@
 
 import { useState, useRef } from 'react';
 import LoadingScreen from '@/components/LoadingScreen';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Results from '@/components/Results';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 export default function Home() {
+  const { publicKey, connected } = useWallet();
   const [walletAddress, setWalletAddress] = useState('');
   const [totalFees, setTotalFees] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -16,6 +21,10 @@ export default function Home() {
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentPage = searchParams.get('page');
+  const [showingResults, setShowingResults] = useState(false);
 
   const calculateFees = async () => {
     if (!walletAddress) {
@@ -28,7 +37,7 @@ export default function Home() {
     let totalFeesAccumulator = 0;
     let raydiumFeesAccumulator = 0;
     const startTime = Date.now();
-    const TIME_LIMIT = 180000; // 1 minute in milliseconds
+    const TIME_LIMIT = 18000; // 1 minute in milliseconds
     const BATCH_SIZE = 40;
     let before: string | undefined = undefined;
     const processedTxs = new Set(); // Track unique transactions
@@ -156,15 +165,34 @@ export default function Home() {
   };
 
   const handleSearch = async () => {
+    if (!walletAddress) {
+      setError('Please enter a wallet address');
+      return;
+    }
+
     setIsLoading(true);
     setTransactionsProcessed(0);
     setProgress(null);
+    
     await calculateFees();
+    
+    setShowingResults(true);
     setIsLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8 relative">
+    <div className="min-h-screen flex flex-col items-center justify-center p-8 relative font-mondwest">
+      {/* Wallet Adapter - Top Right */}
+      <div className="fixed top-4 right-4 z-50">
+        <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
+          {typeof window !== 'undefined' && (
+            <WalletMultiButton className="px-4 py-2 text-base rounded-lg 
+              bg-white/90 dark:bg-gray-800/90 hover:bg-gray-700/90
+              transition-colors font-mondwest" />
+          )}
+        </div>
+      </div>
+
       {/* Hidden video element to help bypass autoplay restrictions */}
       <video 
         playsInline 
@@ -226,118 +254,119 @@ export default function Home() {
         </video>
       </div>
 
-      {/* Content overlay */}
       {isLoading ? (
         <LoadingScreen 
-          onLoadingComplete={() => {
-            setIsLoading(false);
-          }}
+          onLoadingComplete={() => setIsLoading(false)}
           transactionsProcessed={transactionsProcessed}
         />
+      ) : showingResults ? (
+        <div className="max-w-4xl w-full space-y-8 relative z-10">
+          <Results 
+            error={error}
+            totalFees={totalFees}
+            transactionsProcessed={transactionsProcessed}
+            progress={progress}
+            dexFees={dexFees}
+            walletAddress={walletAddress}
+          />
+        </div>
       ) : (
         <div className="max-w-2xl w-full space-y-8 relative z-10">
-          <h1 className="text-6xl font-bold text-center text-white mb-4">
+          <h1 className="text-6xl font-bold text-center mb-4 font-mondwest bg-solana-gradient text-transparent bg-clip-text">
             Fees.Fun
           </h1>
           
-          <h2 className="text-3xl font-bold text-center text-white mb-8">
+          <h2 className="text-3xl font-bold text-center mb-8 font-mondwest bg-gradient-to-r from-purple-500 via-blue-400 to-green-500 text-transparent bg-clip-text">
             Check How Many You Have Been Paying?
           </h2>
 
+          {/* Input field with both buttons */}
           <div className="relative">
-            <input
-              type="text"
-              value={walletAddress}
-              onChange={(e) => setWalletAddress(e.target.value)}
-              placeholder="Enter Solana wallet address"
-              className="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-lg 
-                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         bg-white/90 dark:bg-gray-800/90 pr-32"
-            />
-            <button
-              onClick={handleSearch}
-              disabled={loading}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2
-                         bg-blue-500 text-white px-6 py-2 rounded-lg
-                         hover:bg-blue-600 disabled:bg-blue-300 transition-colors"
-            >
-              {loading ? 'Calculating...' : 'Search'}
-            </button>
+            <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
+              <div className="flex">
+                <input
+                  type="text"
+                  value={walletAddress}
+                  onChange={(e) => setWalletAddress(e.target.value)}
+                  placeholder="Enter wallet address"
+                  className="flex-1 px-6 py-4 text-lg rounded-l-lg 
+                           bg-white/90 dark:bg-gray-800/90 font-mondwest"
+                />
+                <div className="flex gap-2 p-2 bg-white/90 dark:bg-gray-800/90 rounded-r-lg">
+                  <button
+                    onClick={handleSearch}
+                    disabled={!walletAddress || loading}
+                    className="px-6 py-2 bg-solana-green text-gray-900 rounded-lg
+                             hover:bg-[#0DD584] disabled:bg-solana-green/50 
+                             transition-colors font-mondwest"
+                  >
+                    {loading ? 'Calculating...' : 'Search'}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
+          {(error || totalFees !== null) && (
+            <Results 
+              error={error}
+              totalFees={totalFees}
+              transactionsProcessed={transactionsProcessed}
+              progress={progress}
+              dexFees={dexFees}
+              walletAddress={walletAddress}
+            />
+          )}
+
           {/* Social Media Icons */}
-          <div className="flex justify-center gap-6 mt-6">
-            <a href="#" className="p-3 bg-gray-800/80 rounded-full hover:bg-gray-700/80 transition-colors">
-              <img 
-                src="/assets/socials/icons8-twitterx.svg" 
-                alt="Twitter" 
-                className="w-6 h-6 brightness-0 invert"
-              />
-            </a>
-            <a href="#" className="p-3 bg-gray-800/80 rounded-full hover:bg-gray-700/80 transition-colors">
-              <img 
-                src="/assets/socials/icons8-telegram-app.svg" 
-                alt="Telegram" 
-                className="w-6 h-6 brightness-0 invert"
-              />
-            </a>
-            <a href="#" className="p-3 bg-gray-800/80 rounded-full hover:bg-gray-700/80 transition-colors">
-              <img 
-                src="/assets/socials/icons8-discord.svg" 
-                alt="Discord" 
-                className="w-6 h-6 brightness-0 invert"
-              />
-            </a>
+          <div className="flex justify-center gap-6">
+            <div className="p-[1px] rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
+              <a href="#" className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
+                <img 
+                  src="/assets/socials/icons8-twitterx.svg" 
+                  alt="Twitter" 
+                  className="w-6 h-6 brightness-0 invert"
+                />
+              </a>
+            </div>
+            <div className="p-[1px] rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
+              <a href="#" className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
+                <img 
+                  src="/assets/socials/icons8-telegram-app.svg" 
+                  alt="Telegram" 
+                  className="w-6 h-6 brightness-0 invert"
+                />
+              </a>
+            </div>
+            <div className="p-[1px] rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
+              <a href="#" className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
+                <img 
+                  src="/assets/socials/icons8-discord.svg" 
+                  alt="Discord" 
+                  className="w-6 h-6 brightness-0 invert"
+                />
+              </a>
+            </div>
           </div>
 
           {/* Token Address Box */}
-          <div className="relative">
-            <div className="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-lg 
-                            bg-white/90 dark:bg-gray-800/90 pr-32 flex items-center">
-              <span className="text-gray-600 dark:text-gray-400 mr-2">Token Address:</span>
-              <span className="text-gray-800 dark:text-gray-200">Placeholder</span>
+          <div className="relative max-w-xl mx-auto mt-12">
+            <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
+              <div className="w-full px-6 py-4 text-lg rounded-lg 
+                              bg-white/90 dark:bg-gray-800/90 pr-32 flex items-center font-mondwest">
+                <span className="text-gray-600 dark:text-gray-400 mr-2">Token Address:</span>
+                <span className="text-gray-800 dark:text-gray-200">Placeholder</span>
+              </div>
+              <button
+                onClick={copyToClipboard}
+                className="absolute right-1 top-1/2 transform -translate-y-1/2
+                           bg-[#14F195] text-gray-900 px-3 py-1 rounded-lg text-sm
+                           hover:bg-[#0DD584] transition-colors font-mondwest"
+              >
+                Copy
+              </button>
             </div>
-            <button
-              onClick={copyToClipboard}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2
-                         bg-blue-500 text-white px-6 py-2 rounded-lg
-                         hover:bg-blue-600 transition-colors"
-            >
-              Copy
-            </button>
           </div>
-
-          {/* Results section */}
-          {(error || totalFees !== null) && (
-            <div className="bg-white/90 dark:bg-gray-800/90 p-8 rounded-lg backdrop-blur-sm">
-              {error && (
-                <div className="text-red-500 text-sm text-center">
-                  {error}
-                </div>
-              )}
-
-              {totalFees !== null && (
-                <div className="text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                  <p className="text-lg font-semibold">Total Fees</p>
-                  <p className="text-2xl font-bold">{totalFees.toFixed(6)} SOL</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                    {transactionsProcessed} transactions processed
-                  </p>
-                  {progress && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      {progress}
-                    </p>
-                  )}
-                  {dexFees !== null && (
-                    <>
-                      <p className="text-lg font-semibold mt-4">Total Pump.fun Fees</p>
-                      <p className="text-2xl font-bold">{dexFees.toFixed(6)} SOL</p>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
         </div>
       )}
     </div>
