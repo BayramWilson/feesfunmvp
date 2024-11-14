@@ -136,6 +136,11 @@ export default function Results({
                         Right now, that&apos;s $ {(dexFees ? dexFees * solPrice : 0).toFixed(2)}
                       </div>
                     </div>
+
+                    <div className="text-white text-lg">
+                      Transactions processed: {transactionsProcessed}
+                      {progress && <div className="text-gray-400">{progress}</div>}
+                    </div>
                   </div>
 
                   {/* Buttons Container - now at the bottom */}
