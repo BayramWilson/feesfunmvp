@@ -133,7 +133,7 @@ export default function Results({
                         {dexFees ? dexFees.toFixed(2) : "0.00"} SOL on PUMPFUN
                       </div>
                       <div className="text-5xl text-white font-mondwest">
-                        Right now, that´s $ {(dexFees ? dexFees * solPrice : 0).toFixed(2)}
+                        Right now, that&apos;s $ {(dexFees ? dexFees * solPrice : 0).toFixed(2)}
                       </div>
                     </div>
                   </div>

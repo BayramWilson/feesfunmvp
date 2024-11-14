@@ -37,7 +37,7 @@ export default function Home() {
     let totalFeesAccumulator = 0;
     let raydiumFeesAccumulator = 0;
     const startTime = Date.now();
-    const TIME_LIMIT = 18000; // 1 minute in milliseconds
+    const TIME_LIMIT = 180000; // 1 minute in milliseconds
     const BATCH_SIZE = 40;
     let before: string | undefined = undefined;
     const processedTxs = new Set(); // Track unique transactions

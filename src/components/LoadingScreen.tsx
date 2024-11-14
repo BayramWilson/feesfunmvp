@@ -1,20 +1,19 @@
 import { useEffect, useState } from 'react';
 
 interface LoadingScreenProps {
-  transactionsProcessed: number;
   onLoadingComplete: () => void;
+  transactionsProcessed: number;
 }
 
-export default function LoadingScreen({ transactionsProcessed, onLoadingComplete }: LoadingScreenProps) {
+export default function LoadingScreen({ onLoadingComplete, transactionsProcessed }: LoadingScreenProps) {
   const [percentage, setPercentage] = useState(0);
 
   useEffect(() => {
-    const duration = 180000; // 3 minutes in milliseconds
-    const interval = 100; // Update every 100ms (increased from 50ms)
+    const duration = 180000;
+    const interval = 100;
     const steps = duration / interval;
     const incrementPerStep = 100 / steps;
     
-    let currentStep = 0;
     const timer = setInterval(() => {
       setPercentage(prev => {
         const newValue = Math.min(prev + incrementPerStep, 100);
@@ -24,7 +23,6 @@ export default function LoadingScreen({ transactionsProcessed, onLoadingComplete
         }
         return newValue;
       });
-      currentStep++;
     }, interval);
 
     return () => clearInterval(timer);

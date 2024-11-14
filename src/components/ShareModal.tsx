@@ -14,7 +14,7 @@ interface ShareModalProps {
 }
 
 export default function ShareModal({ totalFees, dexFees, onClose, solPrice, scannedWallet }: ShareModalProps) {
-  const [isSharing, setIsSharing] = useState(false);
+  const [isSharing] = useState(false);
   const [tweetLink, setTweetLink] = useState('');
   const [submitError, setSubmitError] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -139,9 +139,9 @@ export default function ShareModal({ totalFees, dexFees, onClose, solPrice, scan
 
       onClose();
       alert('Successfully submitted!');
-    } catch (error: any) {
-      console.error('Error submitting to database:', error.message || error);
-      setSubmitError(error.message || 'Failed to submit. Please try again.');
+    } catch (error: unknown) {
+      console.error('Error submitting to database:', error instanceof Error ? error.message : error);
+      setSubmitError(error instanceof Error ? error.message : 'Failed to submit. Please try again.');
     }
   };
 
@@ -208,7 +208,7 @@ export default function ShareModal({ totalFees, dexFees, onClose, solPrice, scan
                       </div>
                     </div>
                     <div className="text-2xl text-white font-mondwest">
-                      Right now, that´s $ {(dexFees ? dexFees * solPrice : 0).toFixed(2)}
+                      Right now, that&apos;s $ {(dexFees ? dexFees * solPrice : 0).toFixed(2)}
                     </div>
                   </div>
                 </div>
