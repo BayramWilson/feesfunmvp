@@ -127,7 +127,7 @@ export default function Results({
 
                     <div className="space-y-2 text-center">
                       <div className="text-white text-5xl font-mondwest">
-                        You've lost
+                        You&apos;ve lost
                       </div>
                       <div className="text-5xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
                         {dexFees ? dexFees.toFixed(2) : "0.00"} SOL on PUMPFUN

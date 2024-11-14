@@ -201,7 +201,7 @@ export default function ShareModal({ totalFees, dexFees, onClose, solPrice, scan
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <div className="text-white text-3xl font-mondwest">
-                        You've lost
+                        You&apos;ve lost
                       </div>
                       <div className="text-3xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
                         {dexFees ? dexFees.toFixed(2) : "0.00"} SOL on PUMPFUN

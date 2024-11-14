@@ -43,6 +43,7 @@ export default function LoadingScreen({ onLoadingComplete, transactionsProcessed
       <div className="text-center space-y-4">
         <div className="inline-block text-2xl font-mondwest bg-gradient-to-br from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
           Checking your wallet... {Math.floor(percentage)}%
+          {transactionsProcessed > 0 && ` (${transactionsProcessed} transactions found)`}
         </div>
 
         <div className="w-full h-8 rounded-full p-[1px] bg-gradient-to-r from-[#9945FF] to-[#14F195]">
