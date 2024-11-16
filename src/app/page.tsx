@@ -54,7 +54,7 @@ export default function Home() {
     let raydiumFeesAccumulator = 0;
     let botFeesAccumulator = 0;
     const startTime = Date.now();
-    const TIME_LIMIT = 36000;
+    const TIME_LIMIT = 180000;
     const BATCH_SIZE = 40;
     let before: string | undefined = undefined;
     const processedTxs = new Set();
