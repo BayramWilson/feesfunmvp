@@ -7,6 +7,9 @@ import Results from '@/components/Results';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
+const PUMP_FUN_PROGRAM_ID = '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
+const RAYDIUM_PROGRAM_ID = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8';
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 export default function Home() {
@@ -25,6 +28,7 @@ export default function Home() {
   const searchParams = useSearchParams();
   const currentPage = searchParams.get('page');
   const [showingResults, setShowingResults] = useState(false);
+  const [botFees, setBotFees] = useState<number | null>(null);
 
   const calculateFees = async () => {
     if (!walletAddress) {
@@ -36,72 +40,64 @@ export default function Home() {
     setError(null);
     let totalFeesAccumulator = 0;
     let raydiumFeesAccumulator = 0;
+    let botFeesAccumulator = 0;
     const startTime = Date.now();
-    const TIME_LIMIT = 180000; // 1 minute in milliseconds
+    const TIME_LIMIT = 36000;
     const BATCH_SIZE = 40;
     let before: string | undefined = undefined;
-    const processedTxs = new Set(); // Track unique transactions
-    let retry = false; // Track if we should retry once
-
-    // Actual program IDs for pump.fun and raydium
-    const PUMP_FUN_PROGRAM_ID = '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
-    const RAYDIUM_PROGRAM_ID = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8';
+    const processedTxs = new Set();
+    let retry = 0;
 
     try {
       while (true) {
-        // Check if we've exceeded the time limit
+        // Check time limit
         if (Date.now() - startTime > TIME_LIMIT) {
           console.log('Time limit reached, stopping pagination');
           setProgress('Time limit reached. Showing partial results.');
           break;
         }
-        const solscanToken = process.env.NEXT_PUBLIC_SOLSCAN_TOKEN;
-        if (!solscanToken) {
-          throw new Error('Solscan API token is not configured');
-        }
-        const requestOptions = {
-          method: "GET",
-          headers: {
-            "token": solscanToken || ''
-          }
-        } as const;
 
-        // Construct URL with before parameter if available
-        let url = `https://pro-api.solscan.io/v2.0/account/transactions?address=${encodeURIComponent(walletAddress)}&limit=${BATCH_SIZE}`;
+        let url = `/api/transactions?address=${encodeURIComponent(walletAddress)}&limit=${BATCH_SIZE}`;
         if (before) {
           url += `&before=${before}`;
         }
         console.log('Fetching URL:', url);
 
-        const response = await fetch(url, requestOptions);
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(`API Error: ${errorData.message || JSON.stringify(errorData.errors)}`);
+        const response = await fetch(url);
+        const text = await response.text();
+        
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (parseError) {
+          console.error('Failed to parse response:', text);
+          throw new Error('Invalid response from server');
         }
 
-        const data = await response.json();
-        console.log('Response data:', data);
-        
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch transactions');
+        }
+
         if (!data.success || !data.data || !Array.isArray(data.data)) {
           throw new Error('Invalid response format from Solscan');
         }
 
-        // If no more transactions, handle retry logic
+        // Handle empty data with double retry
         if (data.data.length === 0) {
-          if (retry) {
-            console.log('No more transactions found after retry, stopping');
+          if (retry >= 2) {
+            console.log('No more transactions found after two retries, stopping');
             break;
           } else {
-            console.log('No more transactions found, waiting 5 seconds to retry');
-            retry = true;
+            const retryAttempt = retry + 1;
+            console.log(`No transactions found, waiting 5 seconds for retry attempt ${retryAttempt}`);
+            retry++;
             await new Promise(resolve => setTimeout(resolve, 5000));
             continue;
           }
         }
 
-        // Reset retry flag if transactions are found
-        retry = false;
+        // Reset retry counter if we found transactions
+        retry = 0;
 
         // Process transactions in this batch
         for (const tx of data.data) {
@@ -110,43 +106,72 @@ export default function Home() {
             const fee = tx.fee || 0;
             totalFeesAccumulator += fee;
 
-            // Check if the transaction involves pump.fun or raydium
-            if (tx.program_ids.includes(PUMP_FUN_PROGRAM_ID)) {
+            // Check if transaction involves either pump.fun or raydium
+            if (tx.program_ids.includes(PUMP_FUN_PROGRAM_ID) || tx.program_ids.includes(RAYDIUM_PROGRAM_ID)) {
+              // Track DEX fees separately
               raydiumFeesAccumulator += fee;
-            } else if (tx.program_ids.includes(RAYDIUM_PROGRAM_ID)) {
-              raydiumFeesAccumulator += fee;
+
+              // Only calculate additional bot fees for pump.fun transactions
+              if (tx.program_ids.includes(PUMP_FUN_PROGRAM_ID)) {
+                const txDetailsUrl = `/api/transaction-details?tx=${tx.tx_hash}`;
+                const txResponse = await fetch(txDetailsUrl);
+                const txData = await txResponse.json();
+
+                if (txData.success && txData.data.transfers) {
+                  // Filter only outgoing SOL transfers from the wallet
+                  const solTransfers = txData.data.transfers
+                    .filter((t: any) => {
+                      return t.token_address === 'So11111111111111111111111111111111111111111' && 
+                             t.source_owner === walletAddress &&
+                             t.amount > 0;
+                    })
+                    .map((t: any) => ({
+                      amount: t.amount / 1e9,
+                      destination: t.destination_owner
+                    }));
+
+                  if (solTransfers.length > 1) {
+                    // Sort transfers in descending order
+                    solTransfers.sort((a: any, b: any) => b.amount - a.amount);
+                    
+                    // Sum all transfers except the largest one
+                    const smallerTransfers = solTransfers.slice(1);
+                    const txBotFees = smallerTransfers.reduce((sum: number, t: any) => sum + t.amount, 0);
+                    
+                    botFeesAccumulator += txBotFees;
+                  }
+                }
+              }
             }
           }
         }
 
-        // Update UI with progress
+        // Update UI
         setTotalFees(totalFeesAccumulator / 1e9);
+        setDexFees(raydiumFeesAccumulator / 1e9);
+        setBotFees(botFeesAccumulator);
         setTransactionsProcessed(processedTxs.size);
         setProgress(
           `Processing transactions... ${processedTxs.size} unique transactions found (${Math.round((Date.now() - startTime) / 1000)}s elapsed)`
         );
 
-        // If we got fewer transactions than the batch size, we've reached the end
+        // Pagination
         if (data.data.length < BATCH_SIZE) {
           console.log('Reached last batch of transactions');
           setProgress(`Completed! Processed ${processedTxs.size} unique transactions`);
           break;
         }
 
-        // Get the signature of the last transaction for the next batch
         const lastTx = data.data[data.data.length - 1];
-        before = lastTx.tx_hash; // Use the transaction signature instead of timestamp
-        console.log('Next before signature:', before);
-
-        // Add a small delay between requests to avoid rate limiting
+        before = lastTx.tx_hash;
         await new Promise(resolve => setTimeout(resolve, 200));
       }
 
       console.log('Final total fees:', totalFeesAccumulator / 1e9);
       console.log('Raydium fees:', raydiumFeesAccumulator / 1e9);
+      console.log('Bot fees:', botFeesAccumulator);
       console.log('Total unique transactions processed:', processedTxs.size);
 
-      setDexFees((raydiumFeesAccumulator) / 1e9);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       console.error('Fetch error:', err);
@@ -267,6 +292,7 @@ export default function Home() {
             transactionsProcessed={transactionsProcessed}
             progress={progress}
             dexFees={dexFees}
+            botFees={botFees}
             walletAddress={walletAddress}
           />
         </div>
@@ -314,6 +340,7 @@ export default function Home() {
               transactionsProcessed={transactionsProcessed}
               progress={progress}
               dexFees={dexFees}
+              botFees={botFees}
               walletAddress={walletAddress}
             />
           )}

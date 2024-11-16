@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ShareModal from './ShareModal';
+import Rewards from './Rewards';
+import Claim from './Claim';
 
 interface ResultsProps {
   error: string | null;
@@ -7,6 +9,7 @@ interface ResultsProps {
   transactionsProcessed: number;
   progress: string | null;
   dexFees: number | null;
+  botFees: number | null;
   walletAddress: string;
 }
 
@@ -18,6 +21,7 @@ export default function Results({
   transactionsProcessed, 
   progress, 
   dexFees, 
+  botFees, 
   walletAddress 
 }: ResultsProps) {
   const [activeTab, setActiveTab] = useState<Tab>('feeChecker');
@@ -50,9 +54,12 @@ export default function Results({
     fetchSolPrice();
   }, []);
 
+  // Calculate the true total (all fees combined)
+  const combinedTotal = (totalFees || 0) + (botFees || 0);
+
   return (
-    <div className="p-[6px] rounded-lg bg-gradient-to-br from-solana-purple to-solana-green">
-      <div className="bg-[#1A1A1A] rounded-lg backdrop-blur-sm font-mondwest w-full">
+    <div className="p-[6px] rounded-lg bg-gradient-to-br from-solana-purple to-solana-green w-full max-w-[95vw] md:max-w-4xl mx-auto">
+      <div className="bg-[#1A1A1A] rounded-lg backdrop-blur-sm font-mondwest w-full overflow-x-hidden">
         {/* Tabs inside the box */}
         <div className="flex border-b border-gray-700">
           <button
@@ -114,10 +121,10 @@ export default function Results({
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="text-8xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
-                          {totalFees.toFixed(2)} SOL
+                          {combinedTotal.toFixed(2)} SOL
                         </div>
                         <div className="text-4xl text-white font-mondwest">
-                          (${(totalFees * solPrice).toFixed(2)})
+                          (${(combinedTotal * solPrice).toFixed(2)})
                         </div>
                       </div>
                       <div className="text-4xl text-white font-mondwest">
@@ -125,22 +132,40 @@ export default function Results({
                       </div>
                     </div>
 
-                    <div className="space-y-2 text-center">
-                      <div className="text-white text-5xl font-mondwest">
-                        You&apos;ve lost
+                    {/* DEX Fees Section */}
+                    <div className="space-y-2 mt-4">
+                      <div className="flex items-center gap-2">
+                        <div className="text-white text-3xl font-mondwest">
+                          You&apos;ve lost
+                        </div>
+                        <div className="text-3xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
+                          {(dexFees || 0).toFixed(2)} SOL on PUMPFUN
+                        </div>
                       </div>
-                      <div className="text-5xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
-                        {dexFees ? dexFees.toFixed(2) : "0.00"} SOL on PUMPFUN
-                      </div>
-                      <div className="text-5xl text-white font-mondwest">
-                        Right now, that&apos;s $ {(dexFees ? dexFees * solPrice : 0).toFixed(2)}
+                      <div className="text-2xl text-white font-mondwest">
+                        Right now, that&apos;s $ {((dexFees || 0) * solPrice).toFixed(2)}
                       </div>
                     </div>
 
-                    <div className="text-white text-lg">
+                    {/* Bot Fees Section */}
+                    <div className="space-y-2 mt-4">
+                      <div className="flex items-center gap-2">
+                        <div className="text-white text-3xl font-mondwest">
+                          and
+                        </div>
+                        <div className="text-3xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
+                          {(botFees || 0).toFixed(2)} SOL on Bot Fees
+                        </div>
+                      </div>
+                      <div className="text-2xl text-white font-mondwest">
+                        Right now, that&apos;s $ {((botFees || 0) * solPrice).toFixed(2)}
+                      </div>
+                    </div>
+
+                   {/*  <div className="text-white text-lg">
                       Transactions processed: {transactionsProcessed}
                       {progress && <div className="text-gray-400">{progress}</div>}
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Buttons Container - now at the bottom */}
@@ -174,15 +199,11 @@ export default function Results({
           )}
 
           {activeTab === 'rewards' && (
-            <div className="text-center text-gray-400 pt-12">
-              Rewards feature coming soon...
-            </div>
+            <Rewards setActiveTab={setActiveTab} setShowShareModal={setShowShareModal} />
           )}
 
           {activeTab === 'claim' && (
-            <div className="text-center text-gray-400 pt-12">
-              Claim feature coming soon...
-            </div>
+            <Claim />
           )}
         </div>
       </div>
@@ -191,6 +212,7 @@ export default function Results({
         <ShareModal
           totalFees={totalFees ?? 0}
           dexFees={dexFees ?? 0}
+          botFees={botFees ?? 0}
           onClose={() => setShowShareModal(false)}
           solPrice={solPrice}
           scannedWallet={walletAddress}

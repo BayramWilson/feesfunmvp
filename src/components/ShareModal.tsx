@@ -8,17 +8,20 @@ import { supabase } from '@/utils/supabase';
 interface ShareModalProps {
   totalFees: number;
   dexFees: number | null;
+  botFees: number | null;
   onClose: () => void;
   solPrice: number;
   scannedWallet: string;
 }
 
-export default function ShareModal({ totalFees, dexFees, onClose, solPrice, scannedWallet }: ShareModalProps) {
+export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPrice, scannedWallet }: ShareModalProps) {
   const [isSharing] = useState(false);
   const [tweetLink, setTweetLink] = useState('');
   const [submitError, setSubmitError] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const { publicKey } = useWallet();
+
+  const combinedTotal = (totalFees || 0) + (botFees || 0);
 
   const extractTwitterHandle = (tweetUrl: string): string | null => {
     try {
@@ -77,7 +80,7 @@ export default function ShareModal({ totalFees, dexFees, onClose, solPrice, scan
         const { imageUrl } = await response.json();
 
         // Create tweet text
-        const tweetText = `I've lost ${totalFees.toFixed(2)} SOL ($${(totalFees * solPrice).toFixed(2)}) in fees on @PumpFunDAO! Check your fees at https://fees.fun 🚀`;
+        const tweetText = `I've lost ${combinedTotal.toFixed(2)} SOL ($${(combinedTotal * solPrice).toFixed(2)}) in fees on @PumpFunDAO! Check your fees at https://fees.fun 🚀`;
         
         // Create Twitter share URL with both text and image
         const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(imageUrl)}`;
@@ -129,7 +132,7 @@ export default function ShareModal({ totalFees, dexFees, onClose, solPrice, scan
         .insert([
           {
             wallet: scannedWallet,
-            fee: totalFees,
+            fee: combinedTotal,
             link: tweetLink,
             handle: twitterHandle
           }
@@ -161,8 +164,8 @@ export default function ShareModal({ totalFees, dexFees, onClose, solPrice, scan
         </div>
 
         {/* Main modal content box */}
-        <div ref={contentRef} className="w-[960px] p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
-          <div className="bg-[#1A1A1A] rounded-lg p-8 relative overflow-hidden">
+        <div ref={contentRef} className="w-full max-w-[95vw] md:w-[960px] p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
+          <div className="bg-[#1A1A1A] rounded-lg p-4 md:p-8 relative overflow-hidden">
             {/* Background pattern */}
             <div 
               className="absolute inset-0 opacity-10"
@@ -189,10 +192,10 @@ export default function ShareModal({ totalFees, dexFees, onClose, solPrice, scan
                   </div>
                   <div className="flex items-baseline gap-4">
                     <div className="text-7xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
-                      {totalFees.toFixed(2)} SOL
+                      {combinedTotal.toFixed(2)} SOL
                     </div>
                     <div className="text-4xl text-white font-mondwest">
-                      (${(totalFees * solPrice).toFixed(2)})
+                      (${(combinedTotal * solPrice).toFixed(2)})
                     </div>
                   </div>
                   <div className="text-2xl font-mondwest">
@@ -209,6 +212,21 @@ export default function ShareModal({ totalFees, dexFees, onClose, solPrice, scan
                     </div>
                     <div className="text-2xl text-white font-mondwest">
                       Right now, that&apos;s $ {(dexFees ? dexFees * solPrice : 0).toFixed(2)}
+                    </div>
+                  </div>
+
+                  {/* Bot Fees Section */}
+                  <div className="space-y-2 mt-4">
+                    <div className="flex items-center gap-2">
+                      <div className="text-white text-3xl font-mondwest">
+                        and
+                      </div>
+                      <div className="text-3xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
+                        {(botFees ?? 0).toFixed(2)} SOL on Bot Fees
+                      </div>
+                    </div>
+                    <div className="text-2xl text-white font-mondwest">
+                      Right now, that&apos;s $ {((botFees ?? 0) * solPrice).toFixed(2)}
                     </div>
                   </div>
                 </div>
