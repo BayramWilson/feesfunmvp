@@ -12,18 +12,6 @@ const RAYDIUM_PROGRAM_ID = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-interface Transfer {
-  token_address: string;
-  source_owner: string;
-  destination_owner: string;
-  amount: number;
-}
-
-interface TransferWithAmount {
-  amount: number;
-  destination: string;
-}
-
 export default function Home() {
   const { publicKey, connected } = useWallet();
   const [walletAddress, setWalletAddress] = useState('');
@@ -58,7 +46,9 @@ export default function Home() {
     const BATCH_SIZE = 40;
     let before: string | undefined = undefined;
     const processedTxs = new Set();
-    let retry = 0;
+    let retryCount = 0;
+    const MAX_RETRIES = 2;
+    const RETRY_DELAY = 5000; // 5 seconds
 
     try {
       while (true) {
@@ -69,47 +59,49 @@ export default function Home() {
           break;
         }
 
-        let url = `/api/transactions?address=${encodeURIComponent(walletAddress)}&limit=${BATCH_SIZE}`;
+        // Fetch transaction list
+        const solscanToken = process.env.NEXT_PUBLIC_SOLSCAN_TOKEN;
+        if (!solscanToken) {
+          throw new Error('Solscan API token is not configured');
+        }
+        const requestOptions = {
+          method: "GET",
+          headers: { "token": solscanToken }
+        };
+
+        let url = `https://pro-api.solscan.io/v2.0/account/transactions?address=${encodeURIComponent(walletAddress)}&limit=${BATCH_SIZE}`;
         if (before) {
           url += `&before=${before}`;
         }
-        console.log('Fetching URL:', url);
 
-        const response = await fetch(url);
-        const text = await response.text();
-        
-        let data;
-        try {
-          data = JSON.parse(text);
-        } catch (parseError) {
-          console.error('Failed to parse response:', text);
-          throw new Error('Invalid response from server');
-        }
-
+        const response = await fetch(url, requestOptions);
         if (!response.ok) {
-          throw new Error(data.error || 'Failed to fetch transactions');
+          const errorData = await response.json();
+          throw new Error(`API Error: ${errorData.message || JSON.stringify(errorData.errors)}`);
         }
 
+        const data = await response.json();
+        
         if (!data.success || !data.data || !Array.isArray(data.data)) {
           throw new Error('Invalid response format from Solscan');
         }
 
-        // Handle empty data with double retry
+        // Handle empty data with retries
         if (data.data.length === 0) {
-          if (retry >= 2) {
-            console.log('No more transactions found after two retries, stopping');
+          if (retryCount >= MAX_RETRIES) {
+            console.log(`No more transactions found after ${MAX_RETRIES} retries, stopping`);
             break;
-          } else {
-            const retryAttempt = retry + 1;
-            console.log(`No transactions found, waiting 5 seconds for retry attempt ${retryAttempt}`);
-            retry++;
-            await new Promise(resolve => setTimeout(resolve, 5000));
-            continue;
           }
+
+          retryCount++;
+          console.log(`No transactions found, waiting ${RETRY_DELAY/1000} seconds for retry attempt ${retryCount}`);
+          setProgress(`No new transactions found. Retry attempt ${retryCount} of ${MAX_RETRIES}...`);
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+          continue;
         }
 
         // Reset retry counter if we found transactions
-        retry = 0;
+        retryCount = 0;
 
         // Process transactions in this batch
         for (const tx of data.data) {
@@ -125,30 +117,30 @@ export default function Home() {
 
               // Only calculate additional bot fees for pump.fun transactions
               if (tx.program_ids.includes(PUMP_FUN_PROGRAM_ID)) {
-                const txDetailsUrl = `/api/transaction-details?tx=${tx.tx_hash}`;
-                const txResponse = await fetch(txDetailsUrl);
+                const txDetailsUrl = `https://pro-api.solscan.io/v2.0/transaction/actions?tx=${tx.tx_hash}`;
+                const txResponse = await fetch(txDetailsUrl, requestOptions);
                 const txData = await txResponse.json();
 
                 if (txData.success && txData.data.transfers) {
                   // Filter only outgoing SOL transfers from the wallet
                   const solTransfers = txData.data.transfers
-                    .filter((t: Transfer) => {
+                    .filter((t: any) => {
                       return t.token_address === 'So11111111111111111111111111111111111111111' && 
                              t.source_owner === walletAddress &&
                              t.amount > 0;
                     })
-                    .map((t: Transfer): TransferWithAmount => ({
+                    .map((t: any) => ({
                       amount: t.amount / 1e9,
                       destination: t.destination_owner
                     }));
 
                   if (solTransfers.length > 1) {
                     // Sort transfers in descending order
-                    solTransfers.sort((a: TransferWithAmount, b: TransferWithAmount) => b.amount - a.amount);
+                    solTransfers.sort((a: any, b: any) => b.amount - a.amount);
                     
                     // Sum all transfers except the largest one
                     const smallerTransfers = solTransfers.slice(1);
-                    const txBotFees = smallerTransfers.reduce((sum: number, t: TransferWithAmount) => sum + t.amount, 0);
+                    const txBotFees = smallerTransfers.reduce((sum: number, t: any) => sum + t.amount, 0);
                     
                     botFeesAccumulator += txBotFees;
                   }
@@ -174,8 +166,11 @@ export default function Home() {
           break;
         }
 
+        // Update before value for next iteration
         const lastTx = data.data[data.data.length - 1];
         before = lastTx.tx_hash;
+
+        // Add delay between requests
         await new Promise(resolve => setTimeout(resolve, 200));
       }
 
