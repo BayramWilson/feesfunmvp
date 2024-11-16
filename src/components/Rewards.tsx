@@ -17,8 +17,6 @@ export default function Rewards({ setActiveTab, setShowShareModal }: RewardsProp
   const [checkComplete, setCheckComplete] = useState(false);
   const [isEligible, setIsEligible] = useState(false);
   const [isFull, setIsFull] = useState(false);
-  const [localActiveTab, setLocalActiveTab] = useState('check');
-  const router = useRouter();
 
   const checkEligibility = async () => {
     setIsChecking(true);

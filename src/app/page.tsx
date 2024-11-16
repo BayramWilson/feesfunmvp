@@ -12,6 +12,18 @@ const RAYDIUM_PROGRAM_ID = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+interface Transfer {
+  token_address: string;
+  source_owner: string;
+  destination_owner: string;
+  amount: number;
+}
+
+interface TransferWithAmount {
+  amount: number;
+  destination: string;
+}
+
 export default function Home() {
   const { publicKey, connected } = useWallet();
   const [walletAddress, setWalletAddress] = useState('');
@@ -120,23 +132,23 @@ export default function Home() {
                 if (txData.success && txData.data.transfers) {
                   // Filter only outgoing SOL transfers from the wallet
                   const solTransfers = txData.data.transfers
-                    .filter((t: any) => {
+                    .filter((t: Transfer) => {
                       return t.token_address === 'So11111111111111111111111111111111111111111' && 
                              t.source_owner === walletAddress &&
                              t.amount > 0;
                     })
-                    .map((t: any) => ({
+                    .map((t: Transfer): TransferWithAmount => ({
                       amount: t.amount / 1e9,
                       destination: t.destination_owner
                     }));
 
                   if (solTransfers.length > 1) {
                     // Sort transfers in descending order
-                    solTransfers.sort((a: any, b: any) => b.amount - a.amount);
+                    solTransfers.sort((a: TransferWithAmount, b: TransferWithAmount) => b.amount - a.amount);
                     
                     // Sum all transfers except the largest one
                     const smallerTransfers = solTransfers.slice(1);
-                    const txBotFees = smallerTransfers.reduce((sum: number, t: any) => sum + t.amount, 0);
+                    const txBotFees = smallerTransfers.reduce((sum: number, t: TransferWithAmount) => sum + t.amount, 0);
                     
                     botFeesAccumulator += txBotFees;
                   }
