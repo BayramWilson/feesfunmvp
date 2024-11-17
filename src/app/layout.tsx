@@ -7,10 +7,11 @@ import '@solana/wallet-adapter-react-ui/styles.css';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useState, createContext } from 'react';
 
-export const ViewContext = createContext<{
-  currentView: string;
-  setCurrentView: (view: string) => void;
-}>({ currentView: 'wallet-entry', setCurrentView: () => {} });
+// @ts-ignore
+export const ViewContext = createContext({
+  currentView: '',
+  setCurrentView: (view: string) => {},
+});
 
 // Load Mondwest font
 const mondwest = localFont({
