@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { ViewContext } from '../app/layout';
+import { ViewContext } from '../context/ViewContext';
 
 interface LoadingScreenProps {
   onLoadingComplete: () => void;

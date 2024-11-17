@@ -12,10 +12,9 @@ interface ShareModalProps {
   onClose: () => void;
   solPrice: number;
   scannedWallet: string;
-  transactionsProcessed: number;
 }
 
-export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPrice, scannedWallet, transactionsProcessed }: ShareModalProps) {
+export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPrice, scannedWallet }: ShareModalProps) {
   const [isSharing] = useState(false);
   const [tweetLink, setTweetLink] = useState('');
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -231,7 +230,7 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
                           </span>
                         </div>
                         <div className="text-xl text-white font-mondwest">
-                          trading fees for trade bots with {transactionsProcessed} transactions
+                          trading fees for trade bots
                         </div>
                       </div>
                     </div>

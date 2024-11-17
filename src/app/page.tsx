@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Results from '@/components/Results';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { ViewContext } from '@/app/layout';
+import { ViewContext } from '@/context/ViewContext';
 
 const PUMP_FUN_PROGRAM_ID = '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
 const RAYDIUM_PROGRAM_ID = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8';
