@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { ViewContext } from '../app/layout';
 
 interface LoadingScreenProps {
   onLoadingComplete: () => void;
@@ -6,10 +7,15 @@ interface LoadingScreenProps {
 }
 
 export default function LoadingScreen({ onLoadingComplete, transactionsProcessed }: LoadingScreenProps) {
+  const { setCurrentView } = useContext(ViewContext);
   const [percentage, setPercentage] = useState(0);
 
   useEffect(() => {
-    const duration = 180000;
+    setCurrentView('loading');
+  }, []);
+
+  useEffect(() => {
+    const duration = 600000;
     const interval = 100;
     const steps = duration / interval;
     const incrementPerStep = 100 / steps;
@@ -29,9 +35,21 @@ export default function LoadingScreen({ onLoadingComplete, transactionsProcessed
   }, [onLoadingComplete]);
 
   return (
-    <div className="max-w-2xl w-full space-y-8 relative z-10">
-      <div className="rounded-lg overflow-hidden p-[2px] bg-gradient-to-br from-[#9945FF] to-[#14F195]">
-        <div className="w-full h-auto rounded-lg text-center bg-black">
+    <div className="max-w-2xl w-full space-y-8 relative">
+      <div className="rounded-lg overflow-hidden p-[2px] bg-gradient-to-br from-[#9945FF] to-[#14F195] relative">
+        <div className="w-full h-auto rounded-lg text-center bg-black relative">
+          <img
+            src="/assets/rednut.png"
+            alt="Red Nut"
+            className="absolute top-[-24px] left-[-6px] w-48 h-48 z-50"
+          />
+          
+          <img
+            src="/assets/bluenut.png"
+            alt="Blue Nut"
+            className="absolute bottom-[-60px] right-[-48px] w-48 h-48 z-50"
+          />
+
           <img 
             src="/assets/videos/TRUMP VIDEO/trump.gif"
             alt="Loading Animation"

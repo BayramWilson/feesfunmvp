@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import * as htmlToImage from 'html-to-image';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { supabase } from '@/utils/supabase';
@@ -12,14 +12,21 @@ interface ShareModalProps {
   onClose: () => void;
   solPrice: number;
   scannedWallet: string;
+  transactionsProcessed: number;
 }
 
-export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPrice, scannedWallet }: ShareModalProps) {
+export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPrice, scannedWallet, transactionsProcessed }: ShareModalProps) {
   const [isSharing] = useState(false);
   const [tweetLink, setTweetLink] = useState('');
   const [submitError, setSubmitError] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const { publicKey } = useWallet();
+  const [randomImage, setRandomImage] = useState(1);
+
+  useEffect(() => {
+    const randomNum = Math.floor(Math.random() * 5) + 1;
+    setRandomImage(randomNum);
+  }, []);
 
   const combinedTotal = (totalFees || 0) + (botFees || 0);
 
@@ -166,78 +173,78 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
         {/* Main modal content box */}
         <div ref={contentRef} className="w-full max-w-[95vw] md:w-[960px] p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
           <div className="bg-[#1A1A1A] rounded-lg p-4 md:p-8 relative overflow-hidden">
-            {/* Background pattern */}
-            <div 
-              className="absolute inset-0 opacity-10"
-              style={{
-                backgroundImage: `url('/assets/pumpfun.png')`,
-                backgroundSize: '48px',
-                backgroundRepeat: 'repeat',
-              }}
-            />
-
             {/* Content container with higher z-index to stay above pattern */}
-            <div className="space-y-8 relative z-10">
-              {/* Title */}
-              <div className="text-3xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
-                Fees.Fun
-              </div>
+            <div className="space-y-8 relative z-10 flex gap-[1px]">
+              {/* Wrapper with single gradient border */}
+              <div className="p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
+                {/* Container flex wrapper */}
+                <div className="flex divide-x divide-[#9945FF]/20">
+                  {/* Left Half - Text Content */}
+                  <div className="w-1/2 h-[400px] p-8 space-y-6 bg-[#1A1A1A] rounded-l-lg relative">
+                    <div 
+                      className="absolute inset-0 opacity-10"
+                      style={{
+                        backgroundImage: `url('/assets/pumpfun.png')`,
+                        backgroundSize: '48px',
+                        backgroundRepeat: 'repeat',
+                      }}
+                    />
+                    <div className="relative z-10">
+                      {/* Title */}
+                      <div className="text-2xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
+                        Fees.Fun
+                      </div>
 
-              {/* Main Content with Doge */}
-              <div className="relative min-h-[300px] flex">
-                {/* Text Content */}
-                <div className="space-y-6 relative z-10 max-w-[60%]">
-                  <div className="text-3xl font-mondwest">
-                    You have lost
-                  </div>
-                  <div className="flex items-baseline gap-4">
-                    <div className="text-7xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
-                      {combinedTotal.toFixed(2)} SOL
-                    </div>
-                    <div className="text-4xl text-white font-mondwest">
-                      (${(combinedTotal * solPrice).toFixed(2)})
-                    </div>
-                  </div>
-                  <div className="text-2xl font-mondwest">
-                    in fees to pumpfun and co
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <div className="text-white text-3xl font-mondwest">
-                        You&apos;ve lost
+                      <div className="text-2xl font-mondwest">
+                        You have lost
                       </div>
-                      <div className="text-3xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
-                        {dexFees ? dexFees.toFixed(2) : "0.00"} SOL on PUMPFUN
+
+                      <div className="space-y-2">
+                        <div className="text-6xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
+                          {combinedTotal.toFixed(2)} SOL
+                        </div>
+                        <div className="text-3xl text-white font-mondwest">
+                          (${(combinedTotal * solPrice).toFixed(2)})
+                        </div>
+                        <div className="text-xl text-white font-mondwest">
+                          in fees to pumpfun and co
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-2xl text-white font-mondwest">
-                      Right now, that&apos;s $ {(dexFees ? dexFees * solPrice : 0).toFixed(2)}
+
+                      <div className="space-y-2">
+                        <div>
+                          <span className="text-white">You've lost </span>
+                          <span className="text-2xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
+                            {dexFees ? dexFees.toFixed(2) : "0.00"} SOL on PUMPFUN
+                          </span>
+                        </div>
+                        <div className="text-xl text-white font-mondwest">
+                          Right now, that's $ {(dexFees ? dexFees * solPrice : 0).toFixed(2)}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div>
+                          <span className="text-white">You donated </span>
+                          <span className="text-2xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
+                            {(botFees ?? 0).toFixed(2)} SOL
+                          </span>
+                        </div>
+                        <div className="text-xl text-white font-mondwest">
+                          trading fees for trade bots with {transactionsProcessed} transactions
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Bot Fees Section */}
-                  <div className="space-y-2 mt-4">
-                    <div className="flex items-center gap-2">
-                      <div className="text-white text-3xl font-mondwest">
-                        and
-                      </div>
-                      <div className="text-3xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
-                        {(botFees ?? 0).toFixed(2)} SOL on Bot Fees
-                      </div>
-                    </div>
-                    <div className="text-2xl text-white font-mondwest">
-                      Right now, that&apos;s $ {((botFees ?? 0) * solPrice).toFixed(2)}
-                    </div>
+                  {/* Right Half - Random Meme Image */}
+                  <div className="w-1/2 h-[400px] bg-[#1A1A1A] rounded-r-lg">
+                    <img 
+                      src={`/assets/PNLcards/cutted/${randomImage}.png`}
+                      alt="PNL Card Meme" 
+                      className="w-full h-full object-cover rounded-r-lg"
+                    />
                   </div>
-                </div>
-                
-                {/* Doge Image */}
-                <div className="absolute top-1/2 right-12 -translate-y-1/2 w-[432px] h-[432px]">
-                  <img 
-                    src="/assets/doge.png" 
-                    alt="Doge" 
-                    className="w-full h-full object-contain"
-                  />
                 </div>
               </div>
             </div>

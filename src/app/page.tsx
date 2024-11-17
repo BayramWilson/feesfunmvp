@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import LoadingScreen from '@/components/LoadingScreen';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Results from '@/components/Results';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { ViewContext } from '@/app/layout';
 
 const PUMP_FUN_PROGRAM_ID = '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
 const RAYDIUM_PROGRAM_ID = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8';
@@ -29,6 +30,7 @@ export default function Home() {
   const currentPage = searchParams.get('page');
   const [showingResults, setShowingResults] = useState(false);
   const [botFees, setBotFees] = useState<number | null>(null);
+  const { setCurrentView } = useContext(ViewContext);
 
   const calculateFees = async () => {
     if (!walletAddress) {
@@ -42,13 +44,16 @@ export default function Home() {
     let raydiumFeesAccumulator = 0;
     let botFeesAccumulator = 0;
     const startTime = Date.now();
-    const TIME_LIMIT = 180000;
+    const TIME_LIMIT = 600000;
     const BATCH_SIZE = 40;
     let before: string | undefined = undefined;
     const processedTxs = new Set();
     let retryCount = 0;
     const MAX_RETRIES = 2;
     const RETRY_DELAY = 5000; // 5 seconds
+
+    let consecutiveEmptyBatches = 0;
+    const MAX_CONSECUTIVE_EMPTY = 3;
 
     try {
       while (true) {
@@ -159,12 +164,27 @@ export default function Home() {
           `Processing transactions... ${processedTxs.size} unique transactions found (${Math.round((Date.now() - startTime) / 1000)}s elapsed)`
         );
 
-        // Pagination
+        // Modified pagination handling
         if (data.data.length < BATCH_SIZE) {
-          console.log('Reached last batch of transactions');
-          setProgress(`Completed! Processed ${processedTxs.size} unique transactions`);
-          break;
+          console.log('Potentially reached last batch, attempting retry');
+          
+          if (consecutiveEmptyBatches >= MAX_CONSECUTIVE_EMPTY) {
+            console.log('Reached last batch after maximum retries');
+            setProgress(`Completed! Processed ${processedTxs.size} unique transactions`);
+            break;
+          }
+
+          consecutiveEmptyBatches++;
+          console.log(`Retry attempt ${consecutiveEmptyBatches} of ${MAX_CONSECUTIVE_EMPTY}`);
+          setProgress(`Checking for more transactions... Retry ${consecutiveEmptyBatches} of ${MAX_CONSECUTIVE_EMPTY}`);
+          
+          // Wait 5 seconds before retry
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          continue;
         }
+
+        // Reset consecutive empty batches if we got data
+        consecutiveEmptyBatches = 0;
 
         // Update before value for next iteration
         const lastTx = data.data[data.data.length - 1];
@@ -210,6 +230,12 @@ export default function Home() {
     
     setShowingResults(true);
     setIsLoading(false);
+  };
+
+  // Update view when components change
+  const handleWalletSubmit = () => {
+    setCurrentView('loading');
+    // ... rest of your submit logic
   };
 
   return (
@@ -357,27 +383,18 @@ export default function Home() {
             <div className="p-[1px] rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
               <a href="#" className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
                 <img 
-                  src="/assets/socials/icons8-twitterx.svg" 
-                  alt="Twitter" 
-                  className="w-6 h-6 brightness-0 invert"
+                  src="/assets/socials/Token-64x64.svg" 
+                  alt="Token" 
+                  className="w-6 h-6"
                 />
               </a>
             </div>
             <div className="p-[1px] rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
               <a href="#" className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
                 <img 
-                  src="/assets/socials/icons8-telegram-app.svg" 
-                  alt="Telegram" 
-                  className="w-6 h-6 brightness-0 invert"
-                />
-              </a>
-            </div>
-            <div className="p-[1px] rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
-              <a href="#" className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
-                <img 
-                  src="/assets/socials/icons8-discord.svg" 
-                  alt="Discord" 
-                  className="w-6 h-6 brightness-0 invert"
+                  src="/assets/socials/dex-screener-seeklogo.svg" 
+                  alt="DexScreener" 
+                  className="w-6 h-6"
                 />
               </a>
             </div>
@@ -385,21 +402,53 @@ export default function Home() {
 
           {/* Token Address Box */}
           <div className="relative max-w-xl mx-auto mt-12">
-            <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
+            <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400">
               <div className="w-full px-6 py-4 text-lg rounded-lg 
-                              bg-white/90 dark:bg-gray-800/90 pr-32 flex items-center font-mondwest">
+                            bg-white/90 dark:bg-gray-800/90 pr-32 flex items-center font-mondwest">
                 <span className="text-gray-600 dark:text-gray-400 mr-2">Token Address:</span>
                 <span className="text-gray-800 dark:text-gray-200">Placeholder</span>
               </div>
               <button
                 onClick={copyToClipboard}
                 className="absolute right-1 top-1/2 transform -translate-y-1/2
-                           bg-[#14F195] text-gray-900 px-3 py-1 rounded-lg text-sm
-                           hover:bg-[#0DD584] transition-colors font-mondwest"
+                         bg-[#14F195] text-gray-900 px-3 py-1 rounded-lg text-sm
+                         hover:bg-[#0DD584] transition-colors font-mondwest"
               >
                 Copy
               </button>
             </div>
+          </div>
+
+          {/* Logo Grid */}
+          <h3 className="text-xl font-mondwest mb-4 text-white text-center">
+            Powered by:
+          </h3>
+          <div className="grid grid-cols-5 gap-4 max-w-6xl mx-auto px-4 absolute top-24-">
+            {[
+              '/assets/coollogos/bonkbot.webp',
+              '/assets/coollogos/bullx.png',
+              '/assets/coollogos/dexscreener.png',
+              '/assets/coollogos/jup.png',
+              '/assets/coollogos/pumpfun.png',
+              '/assets/coollogos/raydium.png',
+              '/assets/coollogos/solana.png',
+              '/assets/coollogos/solscan.png',
+              '/assets/coollogos/soltradingbot.png',
+              '/assets/coollogos/trojan.png'
+            ].map((logo, index) => (
+              <div 
+                key={index} 
+                className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400"
+              >
+                <div className="bg-black rounded-lg p-4 h-full flex items-center justify-center">
+                  <img 
+                    src={logo} 
+                    alt={logo.split('/').pop()?.replace(/\.(png|webp)$/, '') || 'Partner Logo'} 
+                    className="w-full h-12 object-contain"
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

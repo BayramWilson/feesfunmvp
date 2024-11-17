@@ -1,6 +1,7 @@
 'use client';
 
 import { useWallet } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/utils/supabase';
 import Claim from './Claim';
@@ -131,7 +132,7 @@ export default function Rewards({ setActiveTab, setShowShareModal }: RewardsProp
     }
 
     return (
-      <div className="text-center space-y-8 pt-20">
+      <div className="text-center space-y-8 pt-15">
         <h2 className="text-4xl font-mondwest">
           <span className="bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 text-transparent bg-clip-text">
             {isEligible ? "Congrats, you have been qualified for $FUN!" : "You are not eligible for $FUN"}
@@ -165,6 +166,8 @@ export default function Rewards({ setActiveTab, setShowShareModal }: RewardsProp
         {!isEligible && (
           <>
             <p className="text-2xl text-white">Share your results on Twitter to become eligible!</p>
+            <p className="text-2xl text-white">Only submit when the connected wallet is the analyzed wallet.</p>
+            <p className="text-2xl text-white">First come first serve!</p>
             <div className="p-[1px] rounded-md bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 w-80 mx-auto">
               <button 
                 onClick={() => setShowShareModal(true)}
@@ -195,10 +198,10 @@ export default function Rewards({ setActiveTab, setShowShareModal }: RewardsProp
       </div>
 
       {/* Images Section */}
-      <div className="flex items-center justify-center gap-8 w-full max-w-3xl mb-16">
+      <div className="flex items-center justify-center gap-4 w-full max-w-3xl">
         <div className="w-48 h-48">
           <img
-            src="/assets/web assets video/doge-good-morning.gif"
+            src="/assets/pnutanddoge.png"
             alt="Good Morning Doge"
             className="w-full h-full transform scale-x-[-1]"
           />
@@ -216,29 +219,37 @@ export default function Rewards({ setActiveTab, setShowShareModal }: RewardsProp
 
         <div className="w-48 h-48">
           <img
-            src="/assets/web assets video/doge-good-morning.gif"
+            src="/assets/pnutanddoge.png"
             alt="Good Morning Doge"
             className="w-full h-full"
           />
         </div>
       </div>
 
-      {/* Bottom Text or Button */}
-      {!connected ? (
-        <div className="text-2xl font-mondwest mt-20">
-          <span className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
-            Connect your wallet to check
+      {/* Wallet Display */}
+      {connected && publicKey && (
+        <div className="flex items-center justify-center gap-3 text-white text-2xl">
+          <img 
+            src="/wallet-svgrepo-com.svg" 
+            alt="Wallet" 
+            className="w-8 h-8 invert"
+          />
+          <span className="font-mondwest">
+            {`${publicKey.toString().slice(0, 4)}...${publicKey.toString().slice(-4)}`}
           </span>
         </div>
-      ) : (
-        <div className="p-[1px] rounded-md bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 w-80">
-          <button 
-            onClick={handleCheck}
-            className="w-full py-2 rounded-md font-mondwest text-xl bg-black text-white hover:bg-opacity-80 transition-all"
-          >
-            Check eligibility
-          </button>
-        </div>
+      )}
+
+      {/* Buttons Section */}
+      {!connected && <WalletMultiButton />}
+      
+      {connected && (
+        <button 
+          onClick={handleCheck}
+          className="w-80 py-2 rounded-md font-mondwest text-xl bg-black text-white hover:bg-opacity-80 transition-all border border-gradient-to-r from-purple-500 via-blue-400 to-cyan-400"
+        >
+          Check eligibility
+        </button>
       )}
     </div>
   );
