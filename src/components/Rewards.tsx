@@ -192,7 +192,7 @@ export default function Rewards({ setActiveTab, setShowShareModal }: RewardsProp
                 First come first served.
               </p>
               <p className="text-sm sm:text-base md:text-lg">
-                Keep trading on pumpfun for more <span className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">$FUN</span> and potential rewards.
+                Keep having <span className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">$FUN</span> and losing money to pumpfun and co while trading.
               </p>
             </div>
             <div className="p-[1px] rounded-md bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 w-[180px] sm:w-[260px] md:w-[340px] mx-auto">
