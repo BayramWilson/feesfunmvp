@@ -27,6 +27,7 @@ export default function Results({
   const [activeTab, setActiveTab] = useState<Tab>('feeChecker');
   const [showShareModal, setShowShareModal] = useState(false);
   const [solPrice, setSolPrice] = useState<number>(0);
+  const [hideBottomIcons, setHideBottomIcons] = useState(false);
 
   const fetchSolPrice = async () => {
     try {
@@ -58,13 +59,19 @@ export default function Results({
   const combinedTotal = (totalFees || 0) + (botFees || 0);
 
   return (
-    <div className="p-[6px] rounded-lg bg-gradient-to-br from-solana-purple to-solana-green w-full max-w-[95vw] md:max-w-4xl mx-auto">
+    <div className="p-[6px] rounded-lg bg-gradient-to-br from-solana-purple to-solana-green w-full 
+      max-w-[95vw] 
+      sm:max-w-[85vw] 
+      md:max-w-[75vw] 
+      lg:max-w-[65vw] 
+      xl:max-w-4xl 
+      mx-auto">
       <div className="bg-[#1A1A1A] rounded-lg backdrop-blur-sm font-mondwest w-full overflow-x-hidden">
         {/* Tabs inside the box */}
         <div className="flex border-b border-gray-700">
           <button
             onClick={() => setActiveTab('feeChecker')}
-            className={`flex-1 py-4 px-6 text-lg transition-colors
+            className={`flex-1 py-1.5 sm:py-2 md:py-3 px-2 sm:px-3 md:px-4 text-sm sm:text-base md:text-lg transition-colors
               ${activeTab === 'feeChecker' 
                 ? 'text-white border-b-2 border-solana-green' 
                 : 'text-gray-400 hover:text-gray-200'}`}
@@ -73,7 +80,7 @@ export default function Results({
           </button>
           <button
             onClick={() => setActiveTab('rewards')}
-            className={`flex-1 py-4 px-6 text-lg transition-colors
+            className={`flex-1 py-2 sm:py-4 px-4 sm:px-6 text-base sm:text-lg transition-colors
               ${activeTab === 'rewards' 
                 ? 'text-white border-b-2 border-solana-green' 
                 : 'text-gray-400 hover:text-gray-200'}`}
@@ -82,7 +89,7 @@ export default function Results({
           </button>
           <button
             onClick={() => setActiveTab('claim')}
-            className={`flex-1 py-4 px-6 text-lg transition-colors
+            className={`flex-1 py-2 sm:py-4 px-4 sm:px-6 text-base sm:text-lg transition-colors
               ${activeTab === 'claim' 
                 ? 'text-white border-b-2 border-solana-green' 
                 : 'text-gray-400 hover:text-gray-200'}`}
@@ -116,18 +123,18 @@ export default function Results({
                   {/* Main Content */}
                   <div className="flex-grow space-y-8 text-left">
                     <div className="space-y-2">
-                      <div className="text-white text-4xl font-mondwest">
+                      <div className="text-white text-xl sm:text-2xl md:text-4xl font-mondwest">
                         You have lost
                       </div>
                       <div className="flex items-center gap-4">
-                        <div className="text-8xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
+                        <div className="text-3xl sm:text-4xl md:text-8xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
                           {combinedTotal.toFixed(2)} SOL
                         </div>
-                        <div className="text-4xl text-white font-mondwest">
+                        <div className="text-xl sm:text-2xl md:text-4xl text-white font-mondwest">
                           (${(combinedTotal * solPrice).toFixed(2)})
                         </div>
                       </div>
-                      <div className="text-4xl text-white font-mondwest">
+                      <div className="text-2xl md:text-4xl text-white font-mondwest">
                         in fees to pumpfun and co
                       </div>
                     </div>
@@ -135,14 +142,14 @@ export default function Results({
                     {/* DEX Fees Section */}
                     <div className="space-y-2 mt-4">
                       <div className="flex items-center gap-2">
-                        <div className="text-white text-3xl font-mondwest">
+                        <div className="text-white text-lg sm:text-xl md:text-3xl font-mondwest">
                           You&apos;ve lost
                         </div>
-                        <div className="text-3xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
+                        <div className="text-lg sm:text-xl md:text-3xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
                           {(dexFees || 0).toFixed(2)} SOL on PUMPFUN
                         </div>
                       </div>
-                      <div className="text-2xl text-white font-mondwest">
+                      <div className="text-base sm:text-lg md:text-2xl text-white font-mondwest">
                         Right now, that&apos;s $ {((dexFees || 0) * solPrice).toFixed(2)}
                       </div>
                     </div>
@@ -150,14 +157,14 @@ export default function Results({
                     {/* Bot Fees Section */}
                     <div className="space-y-2 mt-4">
                       <div className="flex items-center gap-2">
-                        <div className="text-white text-3xl font-mondwest">
+                        <div className="text-white text-xl md:text-3xl font-mondwest">
                           and
                         </div>
-                        <div className="text-3xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
+                        <div className="text-xl md:text-3xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
                           {(botFees || 0).toFixed(2)} SOL on Bot Fees
                         </div>
                       </div>
-                      <div className="text-2xl text-white font-mondwest">
+                      <div className="text-xl md:text-2xl text-white font-mondwest">
                         Right now, that&apos;s $ {((botFees || 0) * solPrice).toFixed(2)}
                       </div>
                     </div>
@@ -170,27 +177,26 @@ export default function Results({
 
                   {/* Buttons Container - now at the bottom */}
                   <div className="flex justify-between items-end mt-auto pt-8">
-                    {/* Left Button */}
-                    <button
-                      className="w-[45%] px-6 py-3 bg-[#2A2A2A] text-white rounded-lg hover:bg-[#3A3A3A] transition-colors border-[6px] border-[#1A1A1A]"
-                      onClick={() => setActiveTab('rewards')}
-                    >
-                      Check Rewards
-                    </button>
+                    {/* Check Rewards button */}
+                    <div className="w-[45%] rounded-lg p-[1px] sm:p-[2px] bg-gradient-to-br from-[#9945FF] to-[#14F195]">
+                      <button className="w-full px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base md:text-lg rounded-lg bg-[#2A2A2A] text-white hover:bg-[#3A3A3A] transition-colors">
+                        Check Rewards
+                      </button>
+                    </div>
 
-                    {/* Right Side Container */}
+                    {/* Share section */}
                     <div className="text-right space-y-2 w-[45%]">
                       <div className="text-[#14F195] text-sm">
                         Share on X to eligible for rewards
                       </div>
-                      <button
-                        className="w-full rounded-lg p-[6px] bg-gradient-to-br from-[#9945FF] to-[#14F195] hover:opacity-90 transition-opacity"
-                        onClick={() => setShowShareModal(true)}
-                      >
-                        <span className="block w-full px-6 py-3 rounded-lg bg-[#2A2A2A] text-white hover:bg-[#3A3A3A] transition-colors">
+                      <div className="rounded-lg p-[2px] bg-gradient-to-br from-[#9945FF] to-[#14F195]">
+                        <button 
+                          onClick={() => setShowShareModal(true)} 
+                          className="w-full px-6 py-3 rounded-lg bg-[#2A2A2A] text-white hover:bg-[#3A3A3A] transition-colors"
+                        >
                           SHARE
-                        </span>
-                      </button>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </>
@@ -213,9 +219,13 @@ export default function Results({
           totalFees={totalFees ?? 0}
           dexFees={dexFees ?? 0}
           botFees={botFees ?? 0}
-          onClose={() => setShowShareModal(false)}
+          onClose={() => {
+            setShowShareModal(false);
+            setHideBottomIcons(false);
+          }}
           solPrice={solPrice}
           scannedWallet={walletAddress}
+          setHideBottomIcons={setHideBottomIcons}
         />
       )}
     </div>

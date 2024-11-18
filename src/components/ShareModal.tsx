@@ -12,9 +12,10 @@ interface ShareModalProps {
   onClose: () => void;
   solPrice: number;
   scannedWallet: string;
+  setHideBottomIcons: (hide: boolean) => void;
 }
 
-export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPrice, scannedWallet }: ShareModalProps) {
+export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPrice, scannedWallet, setHideBottomIcons }: ShareModalProps) {
   const [isSharing] = useState(false);
   const [tweetLink, setTweetLink] = useState('');
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -23,8 +24,10 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
   const [randomImage, setRandomImage] = useState(1);
 
   useEffect(() => {
+    setHideBottomIcons(true);
     const randomNum = Math.floor(Math.random() * 5) + 1;
     setRandomImage(randomNum);
+    return () => setHideBottomIcons(false);
   }, []);
 
   const combinedTotal = (totalFees || 0) + (botFees || 0);
@@ -155,14 +158,14 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="flex flex-col items-center gap-4 relative">
-        {/* Close button with gradient border - repositioned */}
-        <div className="absolute -top-4 -right-4 z-20">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 min-[810px]:py-0 py-[12.5%]">
+      <div className="flex flex-col items-center gap-2 min-[810px]:gap-4 relative w-[95%] max-w-[960px]">
+        {/* Desktop close button - outside container */}
+        <div className="hidden min-[810px]:block absolute -top-8 -right-8 z-20">
           <div className="p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
             <button 
               onClick={onClose}
-              className="px-3 py-1 bg-[#1A1A1A] rounded-lg text-gray-400 hover:text-white transition-colors"
+              className="px-3 py-1.5 text-sm bg-[#1A1A1A] rounded-lg text-gray-400 hover:text-white transition-colors"
             >
               × Close
             </button>
@@ -170,16 +173,26 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
         </div>
 
         {/* Main modal content box */}
-        <div ref={contentRef} className="w-full max-w-[95vw] md:w-[960px] p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
-          <div className="bg-[#1A1A1A] rounded-lg p-4 md:p-8 relative overflow-hidden">
-            {/* Content container with higher z-index to stay above pattern */}
-            <div className="space-y-8 relative z-10 flex gap-[1px]">
-              {/* Wrapper with single gradient border */}
+        <div ref={contentRef} className="w-full rounded-lg p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195]">
+          <div className="bg-[#1A1A1A] rounded-lg p-3 min-[810px]:p-8 relative overflow-hidden">
+            {/* Mobile close button - inside container */}
+            <div className="flex justify-end mb-2 min-[810px]:hidden">
+              <div className="p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
+                <button 
+                  onClick={onClose}
+                  className="px-2 py-0.5 text-xs bg-[#1A1A1A] rounded-lg text-gray-400 hover:text-white transition-colors"
+                >
+                  × Close
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2 min-[810px]:space-y-8 relative z-10">
               <div className="p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
                 {/* Container flex wrapper */}
-                <div className="flex divide-x divide-[#9945FF]/20">
+                <div className="flex flex-col min-[810px]:flex-row min-[810px]:divide-x divide-[#9945FF]/20">
                   {/* Left Half - Text Content */}
-                  <div className="w-1/2 h-[400px] p-8 space-y-6 bg-[#1A1A1A] rounded-l-lg relative">
+                  <div className="w-full min-[810px]:w-1/2 h-auto min-[810px]:h-[400px] p-3 min-[810px]:p-8 space-y-2 min-[810px]:space-y-6 bg-[#1A1A1A] rounded-t-lg min-[810px]:rounded-l-lg min-[810px]:rounded-tr-none">
                     <div 
                       className="absolute inset-0 opacity-10"
                       style={{
@@ -190,7 +203,7 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
                     />
                     <div className="relative z-10">
                       {/* Title */}
-                      <div className="text-2xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
+                      <div className="text-base min-[810px]:text-2xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
                         Fees.Fun
                       </div>
 
@@ -237,11 +250,11 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
                   </div>
 
                   {/* Right Half - Random Meme Image */}
-                  <div className="w-1/2 h-[400px] bg-[#1A1A1A] rounded-r-lg">
+                  <div className="w-full min-[810px]:w-1/2 h-[200px] min-[810px]:h-[400px] bg-[#1A1A1A] rounded-b-lg min-[810px]:rounded-r-lg min-[810px]:rounded-bl-none">
                     <img 
                       src={`/assets/PNLcards/cutted/${randomImage}.png`}
                       alt="PNL Card Meme" 
-                      className="w-full h-full object-cover rounded-r-lg"
+                      className="w-full h-full object-cover rounded-b-lg min-[810px]:rounded-r-lg min-[810px]:rounded-bl-none"
                     />
                   </div>
                 </div>
@@ -250,29 +263,34 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
           </div>
         </div>
 
-        {/* Action buttons - match the width */}
-        <div className="w-[960px] flex gap-4">
-          <div className="flex-1 p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
+        {/* Action buttons - always horizontal */}
+        <div className="w-full flex gap-2 min-[810px]:gap-4">
+          <div className="flex-[1.2] p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
             <button 
               onClick={handleDownload}
-              className="w-full px-6 py-3 bg-[#1A1A1A] text-white rounded-lg hover:bg-[#2A2A2A] transition-colors"
+              className="w-full px-4 sm:px-5 md:px-7 py-2 sm:py-2.5 md:py-3 
+                text-sm sm:text-base bg-[#1A1A1A] text-white rounded-lg 
+                hover:bg-[#2A2A2A] transition-colors"
             >
-              Download Image
+              Download
             </button>
           </div>
           <div className="flex-1 p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
             <button 
               onClick={handleShare}
               disabled={isSharing}
-              className="w-full px-6 py-3 bg-[#1A1A1A] text-white rounded-lg hover:bg-[#2A2A2A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 
+                text-sm sm:text-base bg-[#1A1A1A] text-white rounded-lg 
+                hover:bg-[#2A2A2A] transition-colors 
+                disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSharing ? 'Sharing...' : 'Share on Twitter'}
+              {isSharing ? 'Sharing...' : 'Share'}
             </button>
           </div>
         </div>
 
         {/* Submit form - match the width */}
-        <div className="w-[960px] p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
+        <div className="w-full p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
           <div className="flex gap-2 bg-[#1A1A1A] rounded-lg p-2">
             <input
               type="text"

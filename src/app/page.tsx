@@ -240,16 +240,14 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8 relative font-mondwest">
-      {/* Wallet Adapter - Top Right */}
-      <div className="fixed top-4 right-4 z-50">
+      {/* Remove or hide the wallet adapter here */}
+      {/* <div className="fixed top-4 right-4 z-50">
         <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
           {typeof window !== 'undefined' && (
-            <WalletMultiButton className="px-4 py-2 text-base rounded-lg 
-              bg-white/90 dark:bg-gray-800/90 hover:bg-gray-700/90
-              transition-colors font-mondwest" />
+            <WalletMultiButton ... />
           )}
         </div>
-      </div>
+      </div> */}
 
       {/* Hidden video element to help bypass autoplay restrictions */}
       <video 
@@ -331,11 +329,11 @@ export default function Home() {
         </div>
       ) : (
         <div className="max-w-2xl w-full space-y-8 relative z-10">
-          <h1 className="text-6xl font-bold text-center mb-4 font-mondwest bg-solana-gradient text-transparent bg-clip-text">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-center mb-4 font-mondwest bg-solana-gradient text-transparent bg-clip-text">
             Fees.Fun
           </h1>
           
-          <h2 className="text-3xl font-bold text-center mb-8 font-mondwest bg-gradient-to-r from-purple-500 via-blue-400 to-green-500 text-transparent bg-clip-text">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 font-mondwest bg-gradient-to-r from-purple-500 via-blue-400 to-green-500 text-transparent bg-clip-text">
             Check How Many You Have Been Paying?
           </h2>
 
@@ -348,14 +346,15 @@ export default function Home() {
                   value={walletAddress}
                   onChange={(e) => setWalletAddress(e.target.value)}
                   placeholder="Enter wallet address"
-                  className="flex-1 px-6 py-4 text-lg rounded-l-lg 
+                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg rounded-l-lg 
                            bg-white/90 dark:bg-gray-800/90 font-mondwest"
                 />
                 <div className="flex gap-2 p-2 bg-white/90 dark:bg-gray-800/90 rounded-r-lg">
                   <button
                     onClick={handleSearch}
                     disabled={!walletAddress || loading}
-                    className="px-6 py-2 bg-solana-green text-gray-900 rounded-lg
+                    className="px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 text-sm sm:text-base md:text-lg 
+                             bg-solana-green text-gray-900 rounded-lg
                              hover:bg-[#0DD584] disabled:bg-solana-green/50 
                              transition-colors font-mondwest"
                   >
@@ -378,8 +377,28 @@ export default function Home() {
             />
           )}
 
-          {/* Social Media Icons */}
-          <div className="flex justify-center gap-6">
+          {/* Token Address Box - First */}
+          <div className="relative max-w-xl mx-auto mt-8">
+            <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400">
+              <div className="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg rounded-lg 
+                            bg-white/90 dark:bg-gray-800/90 pr-32 flex items-center font-mondwest">
+                <span className="text-gray-600 dark:text-gray-400 mr-2">Token Address:</span>
+                <span className="text-gray-800 dark:text-gray-200">Placeholder</span>
+              </div>
+              <button
+                onClick={copyToClipboard}
+                className="absolute right-1 top-1/2 transform -translate-y-1/2
+                         bg-[#14F195] text-gray-900 px-2 sm:px-2.5 md:px-3 py-1 sm:py-1.5 md:py-2 
+                         rounded-lg text-xs sm:text-sm md:text-base
+                         hover:bg-[#0DD584] transition-colors font-mondwest"
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+
+          {/* Social Media Icons - Now before Powered By */}
+          <div className="flex justify-center gap-6 mt-8">
             <div className="p-[1px] rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
               <a href="#" className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
                 <img 
@@ -400,55 +419,36 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Token Address Box */}
-          <div className="relative max-w-xl mx-auto mt-12">
-            <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400">
-              <div className="w-full px-6 py-4 text-lg rounded-lg 
-                            bg-white/90 dark:bg-gray-800/90 pr-32 flex items-center font-mondwest">
-                <span className="text-gray-600 dark:text-gray-400 mr-2">Token Address:</span>
-                <span className="text-gray-800 dark:text-gray-200">Placeholder</span>
-              </div>
-              <button
-                onClick={copyToClipboard}
-                className="absolute right-1 top-1/2 transform -translate-y-1/2
-                         bg-[#14F195] text-gray-900 px-3 py-1 rounded-lg text-sm
-                         hover:bg-[#0DD584] transition-colors font-mondwest"
-              >
-                Copy
-              </button>
-            </div>
-          </div>
-
-          {/* Logo Grid */}
-          <h3 className="text-xl font-mondwest mb-4 text-white text-center">
-            Powered by:
-          </h3>
-          <div className="grid grid-cols-5 gap-4 max-w-6xl mx-auto px-4 absolute top-24-">
-            {[
-              '/assets/coollogos/bonkbot.webp',
-              '/assets/coollogos/bullx.png',
-              '/assets/coollogos/dexscreener.png',
-              '/assets/coollogos/jup.png',
-              '/assets/coollogos/pumpfun.png',
-              '/assets/coollogos/raydium.png',
-              '/assets/coollogos/solana.png',
-              '/assets/coollogos/solscan.png',
-              '/assets/coollogos/soltradingbot.png',
-              '/assets/coollogos/trojan.png'
-            ].map((logo, index) => (
-              <div 
-                key={index} 
-                className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400"
-              >
-                <div className="bg-black rounded-lg p-4 h-full flex items-center justify-center">
-                  <img 
-                    src={logo} 
-                    alt={logo.split('/').pop()?.replace(/\.(png|webp)$/, '') || 'Partner Logo'} 
-                    className="w-full h-12 object-contain"
-                  />
+          {/* Logo Grid - Last */}
+          <div className="w-full mt-8">
+            <h3 className="text-lg sm:text-xl font-mondwest mb-4 text-white text-center">
+              Powered by:
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto px-4">
+              {[
+                '/assets/newlogos/BBqyuDPm_400x400.png',
+                '/assets/newlogos/bullx.png',
+                '/assets/newlogos/image 29 1.png',
+                '/assets/newlogos/image 31.png',
+                '/assets/newlogos/image 40.png',
+                '/assets/newlogos/image 41.png',
+                '/assets/newlogos/Logomark - White Padded.png',
+                '/assets/newlogos/Magic200.png'
+              ].map((logo, index) => (
+                <div 
+                  key={index} 
+                  className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400"
+                >
+                  <div className="bg-black rounded-lg p-4 h-full flex items-center justify-center">
+                    <img 
+                      src={logo} 
+                      alt={logo.split('/').pop()?.replace(/\.(png|webp)$/, '') || 'Partner Logo'} 
+                      className="w-full h-12 object-contain"
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       )}

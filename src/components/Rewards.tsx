@@ -1,11 +1,14 @@
 'use client';
 
+import { MobileWalletModal } from './MobileWalletModal';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/utils/supabase';
 import Claim from './Claim';
 import { useRouter } from 'next/navigation';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 
 interface RewardsProps {
   setActiveTab: (tab: 'feeChecker' | 'rewards' | 'claim') => void;
@@ -13,11 +16,15 @@ interface RewardsProps {
 }
 
 export default function Rewards({ setActiveTab, setShowShareModal }: RewardsProps) {
-  const { connected, publicKey } = useWallet();
+  const { connected, publicKey, wallet } = useWallet();
   const [isChecking, setIsChecking] = useState(false);
   const [checkComplete, setCheckComplete] = useState(false);
   const [isEligible, setIsEligible] = useState(false);
   const [isFull, setIsFull] = useState(false);
+  const [showMobileWallet, setShowMobileWallet] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 768px)');
+
+
 
   const checkEligibility = async () => {
     setIsChecking(true);
@@ -139,8 +146,8 @@ export default function Rewards({ setActiveTab, setShowShareModal }: RewardsProp
           </span>
         </h2>
 
-        <div className="p-[2px] rounded-lg bg-gradient-to-r from-[#9945FF] to-[#14F195] w-[30rem] mx-auto">
-          <div className="w-full h-60 rounded-lg overflow-hidden">
+        <div className="p-[2px] rounded-lg bg-gradient-to-r from-[#9945FF] to-[#14F195] w-[240px] sm:w-[300px] md:w-[30rem] mx-auto">
+          <div className="w-full h-40 sm:h-48 md:h-60 rounded-lg overflow-hidden">
             <img
               src={isEligible 
                 ? "/assets/web assets video/retardio.gif"
@@ -153,10 +160,16 @@ export default function Rewards({ setActiveTab, setShowShareModal }: RewardsProp
         </div>
 
         {isEligible && (
-          <div className="p-[1px] rounded-md bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 w-80 mx-auto">
+          <div className="p-[1px] rounded-md bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 w-[180px] sm:w-[260px] md:w-[340px] mx-auto">
             <button 
               onClick={() => setActiveTab('claim')}
-              className="w-full py-2 rounded-md font-mondwest text-xl bg-black text-white hover:bg-opacity-80 transition-all"
+              className="w-full 
+                py-1.5 sm:py-2 md:py-3 
+                rounded-md 
+                font-mondwest 
+                text-sm sm:text-base md:text-lg 
+                bg-black text-white 
+                hover:bg-opacity-80 transition-all"
             >
               Claim!
             </button>
@@ -183,74 +196,87 @@ export default function Rewards({ setActiveTab, setShowShareModal }: RewardsProp
   }
 
   return (
-    <div className="flex flex-col items-center space-y-8 py-12">
-      {/* Title Section */}
-      <div className="text-center mb-8">
-        <h2 className="text-4xl font-mondwest">
-          <span className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
-            Check to see if you are
-          </span>
-          <br />
-          <span className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
-            eligible for $FUN
-          </span>
-        </h2>
-      </div>
-
-      {/* Images Section */}
-      <div className="flex items-center justify-center gap-4 w-full max-w-3xl">
-        <div className="w-48 h-48">
-          <img
-            src="/assets/pnutanddoge.png"
-            alt="Good Morning Doge"
-            className="w-full h-full transform scale-x-[-1]"
-          />
+    <>
+      <div className="flex flex-col items-center space-y-8 py-12">
+        {/* Title Section */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-mondwest">
+            <span className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
+              Check to see if you are
+            </span>
+            <br />
+            <span className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
+              eligible for $FUN
+            </span>
+          </h2>
         </div>
 
-        <div className="p-[2px] rounded-lg bg-gradient-to-r from-[#9945FF] to-[#14F195]">
-          <div className="w-48 h-48 bg-[#FDB900] rounded-lg overflow-hidden">
+        {/* Images Section */}
+        <div className="flex items-center justify-center gap-4 w-full max-w-3xl">
+          <div className="w-48 h-48 hidden sm:block">
             <img
-              src="/assets/web assets video/ponke-ponkesol.gif"
-              alt="Ponke"
-              className="w-full h-full object-contain"
+              src="/assets/pnutanddoge.png"
+              alt="Good Morning Doge"
+              className="w-full h-full transform scale-x-[-1]"
+            />
+          </div>
+
+          <div className="p-[2px] rounded-lg bg-gradient-to-r from-[#9945FF] to-[#14F195]">
+            <div className="w-48 h-48 bg-[#FDB900] rounded-lg overflow-hidden">
+              <img
+                src="/assets/web assets video/ponke-ponkesol.gif"
+                alt="Ponke"
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </div>
+
+          <div className="w-48 h-48 hidden sm:block">
+            <img
+              src="/assets/pnutanddoge.png"
+              alt="Good Morning Doge"
+              className="w-full h-full"
             />
           </div>
         </div>
 
-        <div className="w-48 h-48">
-          <img
-            src="/assets/pnutanddoge.png"
-            alt="Good Morning Doge"
-            className="w-full h-full"
-          />
-        </div>
+        {/* Wallet Display */}
+        {connected && publicKey && (
+          <div className="flex items-center justify-center gap-3 text-white text-base sm:text-xl md:text-2xl">
+            <img 
+              src="/wallet-svgrepo-com.svg" 
+              alt="Wallet" 
+              className="w-8 h-8 invert"
+            />
+            <span className="font-mondwest">
+              {`${publicKey.toString().slice(0, 4)}...${publicKey.toString().slice(-4)}`}
+            </span>
+          </div>
+        )}
+
+        {/* Buttons Section */}
+        {!connected && <WalletMultiButton />}
+        
+        {connected && (
+          <div className="p-[2px] rounded-md bg-gradient-to-r from-[#9945FF] to-[#14F195] w-[180px] sm:w-[260px] md:w-[340px] mx-auto">
+            <button 
+              onClick={handleCheck}
+              className="w-full 
+                py-1.5 sm:py-2 md:py-3
+                rounded-md 
+                font-mondwest 
+                text-sm sm:text-base md:text-lg
+                bg-black text-white 
+                hover:bg-opacity-80 transition-all"
+            >
+              Check eligibility
+            </button>
+          </div>
+        )}
       </div>
-
-      {/* Wallet Display */}
-      {connected && publicKey && (
-        <div className="flex items-center justify-center gap-3 text-white text-2xl">
-          <img 
-            src="/wallet-svgrepo-com.svg" 
-            alt="Wallet" 
-            className="w-8 h-8 invert"
-          />
-          <span className="font-mondwest">
-            {`${publicKey.toString().slice(0, 4)}...${publicKey.toString().slice(-4)}`}
-          </span>
-        </div>
+      {isMobile && showMobileWallet && (
+        <MobileWalletModal onClose={() => setShowMobileWallet(false)} />
       )}
-
-      {/* Buttons Section */}
-      {!connected && <WalletMultiButton />}
-      
-      {connected && (
-        <button 
-          onClick={handleCheck}
-          className="w-80 py-2 rounded-md font-mondwest text-xl bg-black text-white hover:bg-opacity-80 transition-all border border-gradient-to-r from-purple-500 via-blue-400 to-cyan-400"
-        >
-          Check eligibility
-        </button>
-      )}
-    </div>
+    </>
   );
 } 

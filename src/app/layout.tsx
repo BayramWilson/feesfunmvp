@@ -7,6 +7,7 @@ import '@solana/wallet-adapter-react-ui/styles.css';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ViewContext } from '@/context/ViewContext';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 // Load Mondwest font
 const mondwest = localFont({
@@ -21,6 +22,7 @@ export default function RootLayout({
 }>) {
   const router = useRouter();
   const [currentView, setCurrentView] = useState('wallet-entry');
+  const [hideBottomIcons, setHideBottomIcons] = useState(false);
 
   const handleReset = () => {
     router.push('/');
@@ -32,50 +34,74 @@ export default function RootLayout({
       <body>
         <ClientWrapper>
           <div className="relative min-h-screen flex flex-col">
-            <ViewContext.Provider value={{ currentView, setCurrentView }}>
+            <ViewContext.Provider value={{ 
+              currentView, 
+              setCurrentView,
+              hideBottomIcons,
+              setHideBottomIcons 
+            }}>
               {children}
 
-              {/* Another One button - Always visible, top left */}
-              <button 
-                onClick={handleReset}
-                className="fixed top-4 left-4 z-50 p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-green-500"
-              >
-                <span className="block px-6 py-2 bg-black text-white rounded-lg hover:bg-opacity-80 transition-all font-mondwest">
-                  Another One?
-                </span>
-              </button>
+              {/* Desktop Only Buttons */}
+              <div className="sm:block">
+                {/* Another One Button - Hidden on Mobile */}
+                <button 
+                  onClick={handleReset}
+                  className="fixed top-4 left-4 z-50 p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-green-500 hidden sm:block"
+                >
+                  <span className="block px-6 py-2 bg-black text-white rounded-lg hover:bg-opacity-80 transition-all font-mondwest">
+                    Another One?
+                  </span>
+                </button>
 
-              {/* Chipmunks */}
+                {/* Wallet Button - Desktop Only */}
+                <div className="fixed top-4 right-4 z-50 hidden sm:block">
+                  <WalletMultiButton className="!bg-black hover:!bg-opacity-80 !transition-all !font-mondwest" />
+                </div>
+              </div>
+
+              {/* Chipmunks - Responsive sizing */}
               <img
                 src="/assets/chipmunk.png"
                 alt="Chipmunk Left"
-                className="fixed w-[604px] h-[554px] top-[470px] left-0 transform scale-x-[-1] z-40 rounded-tr-[540px]"
+                className="fixed 
+                  w-[100px] h-[100px] xl:w-[540px] xl:h-[405px]
+                  bottom-0
+                  left-0 
+                  transform scale-x-[-1] 
+                  z-40 
+                  hidden lg:block chipmunk-visible"
               />
               <img
                 src="/assets/chipmunk.png"
                 alt="Chipmunk Right"
-                className="fixed w-[604px] h-[554px] top-[470px] right-0 z-40 rounded-tl-[540px]"
+                className="fixed 
+                  w-[100px] h-[100px] xl:w-[540px] xl:h-[405px]
+                  bottom-0
+                  right-0 
+                  z-40 
+                  hidden lg:block chipmunk-visible"
               />
 
-              {/* Social Media Icons - Show everywhere except wallet entry */}
-              {currentView !== 'wallet-entry' && (
+              {/* Social Media Icons - Show everywhere except wallet entry and when share modal is open */}
+              {currentView !== 'wallet-entry' && !hideBottomIcons && (
                 <div className="fixed bottom-12 left-0 right-0 z-50">
-                  <div className="flex justify-center gap-6">
+                  <div className="hidden sm:flex justify-center gap-4 sm:gap-6">
                     <div className="p-[1px] rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
-                      <a href="#" className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
+                      <a href="#" className="p-2 sm:p-2.5 md:p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
                         <img 
                           src="/assets/socials/Token-64x64.svg" 
                           alt="Token" 
-                          className="w-6 h-6"
+                          className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
                         />
                       </a>
                     </div>
                     <div className="p-[1px] rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
-                      <a href="#" className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
+                      <a href="#" className="p-2 sm:p-2.5 md:p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
                         <img 
                           src="/assets/socials/dex-screener-seeklogo.svg" 
                           alt="DexScreener" 
-                          className="w-6 h-6"
+                          className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
                         />
                       </a>
                     </div>
