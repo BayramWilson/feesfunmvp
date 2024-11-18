@@ -188,7 +188,7 @@ export default function Rewards({ setActiveTab, setShowShareModal }: RewardsProp
               <p className="text-sm sm:text-base md:text-lg">
                 Check back in 24 hours to claim rewards if you're among the first <span className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">10,000</span>.
               </p>
-              <p className="text-sm sm:text-base md:text-lg">
+              <p className="text-sm sm:text-base md:text-lg italic font-serif">
                 First come first served.
               </p>
               <p className="text-sm sm:text-base md:text-lg">
