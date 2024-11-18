@@ -179,7 +179,10 @@ export default function Results({
                   <div className="flex justify-between items-end mt-auto pt-8">
                     {/* Check Rewards button */}
                     <div className="w-[45%] rounded-lg p-[1px] sm:p-[2px] bg-gradient-to-br from-[#9945FF] to-[#14F195]">
-                      <button className="w-full px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base md:text-lg rounded-lg bg-[#2A2A2A] text-white hover:bg-[#3A3A3A] transition-colors">
+                      <button 
+                        onClick={() => setActiveTab('rewards')}
+                        className="w-full px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base md:text-lg rounded-lg bg-[#2A2A2A] text-white hover:bg-[#3A3A3A] transition-colors"
+                      >
                         Check Rewards
                       </button>
                     </div>
