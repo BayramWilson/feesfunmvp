@@ -65,7 +65,7 @@ export default function RootLayout({
                 src="/assets/chipmunk.png"
                 alt="Chipmunk Left"
                 className="fixed 
-                  w-[100px] h-[100px] xl:w-[540px] xl:h-[405px]
+                  w-[200px] h-[200px] xl:w-[199px] xl:h-[199px]
                   bottom-0
                   left-0 
                   transform scale-x-[-1] 
@@ -76,7 +76,7 @@ export default function RootLayout({
                 src="/assets/chipmunk.png"
                 alt="Chipmunk Right"
                 className="fixed 
-                  w-[100px] h-[100px] xl:w-[540px] xl:h-[405px]
+                   w-[200px] h-[200px] xl:w-[199px] xl:h-[199px]
                   bottom-0
                   right-0 
                   z-40 
