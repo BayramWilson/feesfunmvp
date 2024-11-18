@@ -382,11 +382,11 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
                   </div>
 
                   {/* Right Half - Random Meme Image */}
-                  <div className="w-full min-[810px]:w-1/2 h-[150px] min-[810px]:h-[400px] bg-[#1A1A1A] rounded-b-lg min-[810px]:rounded-r-lg min-[810px]:rounded-bl-none">
+                  <div className="w-full min-[810px]:w-1/2 h-[250px] min-[810px]:h-[400px] bg-[#1A1A1A] rounded-b-lg min-[810px]:rounded-r-lg min-[810px]:rounded-bl-none">
                     <img 
                       src={`/assets/PNLcards/cutted/${randomImage}.png`}
                       alt="PNL Card Meme" 
-                      className="w-full h-full object-cover rounded-b-lg min-[810px]:rounded-r-lg min-[810px]:rounded-bl-none"
+                      className="w-full h-full object-contain min-[810px]:object-cover rounded-b-lg min-[810px]:rounded-r-lg min-[810px]:rounded-bl-none"
                     />
                   </div>
                 </div>
