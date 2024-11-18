@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import * as htmlToImage from 'html-to-image';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { supabase } from '@/utils/supabase';
 
 interface ShareModalProps {
@@ -326,13 +327,19 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
         <div ref={contentRef} className="w-full rounded-lg p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195]">
           <div className="bg-[#1A1A1A] rounded-lg p-2 min-[810px]:p-8 relative overflow-hidden">
             {/* Mobile close button */}
-            <div className="flex justify-end mb-1 min-[810px]:mb-2 min-[810px]:hidden sticky top-0 z-50">
+            <div className="flex justify-between mb-1 min-[810px]:mb-2 min-[810px]:hidden sticky top-0 z-50">
+              {/* New Wallet Button */}
               <div className="p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
+                <WalletMultiButton className="!px-2 !py-0.5 !text-xs !bg-[#1A1A1A] !rounded-lg !text-gray-400 hover:!text-white !transition-colors !h-auto" />
+              </div>
+              
+              {/* Existing Close Button */}
+              <div className="w-6 h-6 p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
                 <button 
                   onClick={onClose}
-                  className="px-2 py-0.5 text-xs bg-[#1A1A1A] rounded-lg text-gray-400 hover:text-white transition-colors"
+                  className="w-full h-full flex items-center justify-center text-xs bg-[#1A1A1A] rounded-lg text-gray-400 hover:text-white transition-colors"
                 >
-                  × Close
+                  ×
                 </button>
               </div>
             </div>
