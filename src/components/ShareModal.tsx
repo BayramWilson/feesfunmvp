@@ -201,10 +201,32 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
         // Create tweet text
         const tweetText = `I've lost ${combinedTotal.toFixed(2)} SOL ($${(combinedTotal * solPrice).toFixed(2)}) in fees on @PumpFunDAO! Check your fees at https://fees.fun 🚀`;
         
-        // Create Twitter share URL with both text and image
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(imageUrl)}`;
+        // Check if mobile device
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         
-        window.open(twitterUrl, '_blank');
+        if (isMobile) {
+          // For iOS devices
+          if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            window.location.href = `twitter://post?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(imageUrl)}`;
+            
+            // Fallback to web if app doesn't open after 1 second
+            setTimeout(() => {
+              window.location.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(imageUrl)}`;
+            }, 1000);
+          } 
+          // For Android devices
+          else if (/Android/i.test(navigator.userAgent)) {
+            window.location.href = `intent://post?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(imageUrl)}#Intent;scheme=twitter;package=com.twitter.android;end`;
+            
+            // Fallback to web if app doesn't open after 1 second
+            setTimeout(() => {
+              window.location.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(imageUrl)}`;
+            }, 1000);
+          }
+        } else {
+          // Desktop behavior remains the same
+          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(imageUrl)}`, '_blank');
+        }
       } catch (error) {
         console.error('Error sharing:', error);
         alert('Failed to share. Please try again.');
@@ -268,8 +290,8 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 min-[810px]:py-0 py-[12.5%]">
-      <div className="flex flex-col items-center gap-2 min-[810px]:gap-4 relative w-[95%] max-w-[960px]">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 min-[810px]:py-0 py-[12.5%] overflow-y-auto h-full">
+      <div className="flex flex-col items-center gap-1 min-[810px]:gap-4 relative w-[95%] max-w-[960px] mt-12 min-[810px]:mt-0">
         {/* Desktop close button - outside container */}
         <div className="hidden min-[810px]:block absolute -top-8 -right-8 z-20">
           <div className="p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
@@ -284,9 +306,9 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
 
         {/* Main modal content box */}
         <div ref={contentRef} className="w-full rounded-lg p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195]">
-          <div className="bg-[#1A1A1A] rounded-lg p-3 min-[810px]:p-8 relative overflow-hidden">
-            {/* Mobile close button - inside container */}
-            <div className="flex justify-end mb-2 min-[810px]:hidden">
+          <div className="bg-[#1A1A1A] rounded-lg p-2 min-[810px]:p-8 relative overflow-hidden">
+            {/* Mobile close button */}
+            <div className="flex justify-end mb-1 min-[810px]:mb-2 min-[810px]:hidden sticky top-0 z-50">
               <div className="p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
                 <button 
                   onClick={onClose}
@@ -297,12 +319,12 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
               </div>
             </div>
 
-            <div className="space-y-2 min-[810px]:space-y-8 relative z-10">
+            <div className="space-y-1 min-[810px]:space-y-8 relative z-10">
               <div className="p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
                 {/* Container flex wrapper */}
                 <div className="flex flex-col min-[810px]:flex-row min-[810px]:divide-x divide-[#9945FF]/20">
                   {/* Left Half - Text Content */}
-                  <div className="w-full min-[810px]:w-1/2 h-auto min-[810px]:h-[400px] p-3 min-[810px]:p-8 space-y-2 min-[810px]:space-y-6 bg-[#1A1A1A] rounded-t-lg min-[810px]:rounded-l-lg min-[810px]:rounded-tr-none">
+                  <div className="w-full min-[810px]:w-1/2 h-auto min-[810px]:h-[400px] p-2 min-[810px]:p-8 space-y-1 min-[810px]:space-y-6 bg-[#1A1A1A] rounded-t-lg min-[810px]:rounded-l-lg min-[810px]:rounded-tr-none">
                     <div 
                       className="absolute inset-0 opacity-10"
                       style={{
@@ -313,46 +335,46 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
                     />
                     <div className="relative z-10">
                       {/* Title */}
-                      <div className="text-base min-[810px]:text-2xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
+                      <div className="text-sm min-[810px]:text-2xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
                         Fees.Fun
                       </div>
 
-                      <div className="text-2xl font-mondwest">
+                      <div className="text-lg min-[810px]:text-2xl font-mondwest">
                         You have lost
                       </div>
 
-                      <div className="space-y-2">
-                        <div className="text-6xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
+                      <div className="space-y-1 min-[810px]:space-y-2">
+                        <div className="text-3xl min-[810px]:text-6xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
                           {combinedTotal.toFixed(2)} SOL
                         </div>
-                        <div className="text-3xl text-white font-mondwest">
+                        <div className="text-xl min-[810px]:text-3xl text-white font-mondwest">
                           (${(combinedTotal * solPrice).toFixed(2)})
                         </div>
-                        <div className="text-xl text-white font-mondwest">
+                        <div className="text-base min-[810px]:text-xl text-white font-mondwest">
                           in fees to pumpfun and co
                         </div>
                       </div>
 
-                      <div className="space-y-2">
+                      <div className="space-y-1 min-[810px]:space-y-2">
                         <div>
-                          <span className="text-white">You've lost </span>
-                          <span className="text-2xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
+                          <span className="text-white text-sm min-[810px]:text-base">You've lost </span>
+                          <span className="text-lg min-[810px]:text-2xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
                             {dexFees ? dexFees.toFixed(2) : "0.00"} SOL on PUMPFUN
                           </span>
                         </div>
-                        <div className="text-xl text-white font-mondwest">
+                        <div className="text-base min-[810px]:text-xl text-white font-mondwest">
                           Right now, that's $ {(dexFees ? dexFees * solPrice : 0).toFixed(2)}
                         </div>
                       </div>
 
-                      <div className="space-y-2">
+                      <div className="space-y-1 min-[810px]:space-y-2">
                         <div>
-                          <span className="text-white">You donated </span>
-                          <span className="text-2xl font-mondwest bg-gradient-to-r from-solana-purple via-blue-400 to-solana-green text-transparent bg-clip-text">
+                          <span className="text-white text-sm min-[810px]:text-base">You donated </span>
+                          <span className="text-lg min-[810px]:text-2xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
                             {(botFees ?? 0).toFixed(2)} SOL
                           </span>
                         </div>
-                        <div className="text-xl text-white font-mondwest">
+                        <div className="text-base min-[810px]:text-xl text-white font-mondwest">
                           trading fees for trade bots
                         </div>
                       </div>
@@ -360,7 +382,7 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
                   </div>
 
                   {/* Right Half - Random Meme Image */}
-                  <div className="w-full min-[810px]:w-1/2 h-[200px] min-[810px]:h-[400px] bg-[#1A1A1A] rounded-b-lg min-[810px]:rounded-r-lg min-[810px]:rounded-bl-none">
+                  <div className="w-full min-[810px]:w-1/2 h-[150px] min-[810px]:h-[400px] bg-[#1A1A1A] rounded-b-lg min-[810px]:rounded-r-lg min-[810px]:rounded-bl-none">
                     <img 
                       src={`/assets/PNLcards/cutted/${randomImage}.png`}
                       alt="PNL Card Meme" 
@@ -374,12 +396,12 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
         </div>
 
         {/* Action buttons - always horizontal */}
-        <div className="w-full flex gap-2 min-[810px]:gap-4">
+        <div className="w-full flex gap-1 min-[810px]:gap-4">
           <div className="flex-[1.2] p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
             <button 
               onClick={handleDownload}
-              className="w-full px-4 sm:px-5 md:px-7 py-2 sm:py-2.5 md:py-3 
-                text-sm sm:text-base bg-[#1A1A1A] text-white rounded-lg 
+              className="w-full px-2 sm:px-5 md:px-7 py-1 sm:py-2.5 md:py-3 
+                text-xs sm:text-base bg-[#1A1A1A] text-white rounded-lg 
                 hover:bg-[#2A2A2A] transition-colors"
             >
               Download
@@ -389,8 +411,8 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
             <button 
               onClick={handleShare}
               disabled={isSharing}
-              className="w-full px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 
-                text-sm sm:text-base bg-[#1A1A1A] text-white rounded-lg 
+              className="w-full px-2 sm:px-4 md:px-6 py-1 sm:py-2.5 md:py-3 
+                text-xs sm:text-base bg-[#1A1A1A] text-white rounded-lg 
                 hover:bg-[#2A2A2A] transition-colors 
                 disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -399,25 +421,25 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
           </div>
         </div>
 
-        {/* Submit form - match the width */}
+        {/* Submit form */}
         <div className="w-full p-[1px] bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg">
-          <div className="flex gap-2 bg-[#1A1A1A] rounded-lg p-2">
+          <div className="flex gap-1 min-[810px]:gap-2 bg-[#1A1A1A] rounded-lg p-1 min-[810px]:p-2">
             <input
               type="text"
               value={tweetLink}
               onChange={(e) => setTweetLink(e.target.value)}
               placeholder="Submit link to your tweet to be eligible for $FUN reward"
-              className="flex-1 px-4 py-2 bg-[#2A2A2A] rounded-lg text-white placeholder-gray-500 outline-none"
+              className="flex-1 px-2 min-[810px]:px-4 py-1 min-[810px]:py-2 text-xs min-[810px]:text-base bg-[#2A2A2A] rounded-lg text-white placeholder-gray-500 outline-none"
             />
             <button 
               onClick={handleSubmit}
-              className="px-6 py-2 bg-[#2A2A2A] text-white rounded-lg hover:bg-[#3A3A3A] transition-colors"
+              className="px-3 min-[810px]:px-6 py-1 min-[810px]:py-2 text-xs min-[810px]:text-base bg-[#2A2A2A] text-white rounded-lg hover:bg-[#3A3A3A] transition-colors"
             >
               Submit
             </button>
           </div>
           {submitError && (
-            <div className="mt-2 text-red-500 text-sm px-2">
+            <div className="mt-1 text-red-500 text-xs min-[810px]:text-sm px-2">
               {submitError}
             </div>
           )}
