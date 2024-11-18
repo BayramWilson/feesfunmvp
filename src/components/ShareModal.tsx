@@ -155,19 +155,37 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
         document.body.removeChild(tempDiv);
         document.head.removeChild(style);
         
-        // Handle download
-        const link = document.createElement('a');
-        link.download = 'funfees-share.png';
-        link.href = dataUrl;
-        
-        if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-          const img = new Image();
-          img.src = dataUrl;
-          const w = window.open('');
-          w?.document.write(img.outerHTML);
-        } else {
-          link.click();
+        // Upload to server
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ image: dataUrl })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to upload image');
         }
+
+        const { imageUrl } = await response.json();
+        
+        // Check if mobile device
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+          // Create a temporary anchor element
+          const link = document.createElement('a');
+          link.href = imageUrl;
+          link.download = 'fees-fun.png';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } else {
+          // Desktop behavior remains the same
+          window.open(imageUrl, '_blank');
+        }
+        
       } catch (error) {
         console.error('Error generating image:', error);
         alert('Failed to generate image. Please try again.');
