@@ -48,19 +48,129 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
   const handleDownload = async () => {
     if (contentRef.current) {
       try {
-        const dataUrl = await htmlToImage.toPng(contentRef.current, {
+        // Create a temporary clone with desktop layout
+        const tempDiv = document.createElement('div');
+        tempDiv.style.width = '960px';
+        tempDiv.style.height = '400px';
+        tempDiv.style.backgroundColor = '#1A1A1A';
+        tempDiv.style.padding = '32px';
+        tempDiv.style.borderRadius = '8px';
+        tempDiv.style.fontFamily = 'Mondwest, sans-serif';
+        
+        // Create the flex container
+        const flexContainer = document.createElement('div');
+        flexContainer.style.display = 'flex';
+        flexContainer.style.width = '100%';
+        flexContainer.style.height = '100%';
+        
+        // Left side content (text)
+        const leftSide = document.createElement('div');
+        leftSide.style.flex = '1';
+        leftSide.style.paddingRight = '32px';
+        leftSide.style.fontFamily = 'Mondwest, sans-serif';
+        leftSide.innerHTML = `
+          <div style="font-family: Mondwest, sans-serif; font-size: 24px; background: linear-gradient(to right, #9945FF, #14F195); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            Fees.Fun
+          </div>
+          <div style="font-family: Mondwest, sans-serif; font-size: 60px; background: linear-gradient(to right, #9945FF, #14F195); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            ${combinedTotal.toFixed(2)} SOL
+          </div>
+          <div style="font-family: Mondwest, sans-serif; font-size: 30px; color: white;">
+            ($${(combinedTotal * solPrice).toFixed(2)})
+          </div>
+          <div style="font-family: Mondwest, sans-serif; font-size: 20px; color: white;">
+            in fees to pumpfun and co
+          </div>
+          <div style="margin-top: 16px;">
+            <span style="color: white;">You've lost </span>
+            <span style="font-family: Mondwest, sans-serif; font-size: 24px; background: linear-gradient(to right, #9945FF, #14F195); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              ${dexFees ? dexFees.toFixed(2) : "0.00"} SOL on PUMPFUN
+            </span>
+          </div>
+          <div style="font-family: Mondwest, sans-serif; font-size: 20px; color: white;">
+            Right now, that's $ ${(dexFees ? dexFees * solPrice : 0).toFixed(2)}
+          </div>
+          <div style="margin-top: 16px;">
+            <span style="color: white;">You donated </span>
+            <span style="font-family: Mondwest, sans-serif; font-size: 24px; background: linear-gradient(to right, #9945FF, #14F195); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              ${(botFees ?? 0).toFixed(2)} SOL
+            </span>
+          </div>
+          <div style="font-family: Mondwest, sans-serif; font-size: 20px; color: white;">
+            trading fees for trade bots
+          </div>
+        `;
+        
+        // Add pumpfun background pattern
+        const pattern = document.createElement('div');
+        pattern.style.position = 'absolute';
+        pattern.style.inset = '0';
+        pattern.style.opacity = '0.1';
+        pattern.style.backgroundImage = `url('/assets/pumpfun.png')`;
+        pattern.style.backgroundSize = '48px';
+        pattern.style.backgroundRepeat = 'repeat';
+        leftSide.style.position = 'relative';
+        leftSide.appendChild(pattern);
+        
+        // Right side image
+        const rightSide = document.createElement('div');
+        rightSide.style.flex = '1';
+        const img = document.createElement('img');
+        img.src = `/assets/PNLcards/cutted/${randomImage}.png`;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        rightSide.appendChild(img);
+        
+        // Assemble the layout
+        flexContainer.appendChild(leftSide);
+        flexContainer.appendChild(rightSide);
+        tempDiv.appendChild(flexContainer);
+        document.body.appendChild(tempDiv);
+
+        // Add style tag for font
+        const style = document.createElement('style');
+        style.textContent = `
+          @font-face {
+            font-family: 'Mondwest';
+            src: url('/fonts/PPMondwest-Regular.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+          }
+        `;
+        document.head.appendChild(style);
+        
+        // Wait a bit for font to load
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Generate image
+        const dataUrl = await htmlToImage.toPng(tempDiv, {
           quality: 1.0,
           pixelRatio: 2,
-          backgroundColor: '#1A1A1A',
+          width: 960,
+          height: 400,
         });
         
-        // Create download link
+        // Clean up
+        document.body.removeChild(tempDiv);
+        document.head.removeChild(style);
+        
+        // Handle download
         const link = document.createElement('a');
         link.download = 'funfees-share.png';
         link.href = dataUrl;
-        link.click();
+        
+        if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+          const img = new Image();
+          img.src = dataUrl;
+          const w = window.open('');
+          w?.document.write(img.outerHTML);
+        } else {
+          link.click();
+        }
       } catch (error) {
         console.error('Error generating image:', error);
+        alert('Failed to generate image. Please try again.');
       }
     }
   };
