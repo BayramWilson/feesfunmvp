@@ -91,7 +91,7 @@ export default function LoadingScreen({ onLoadingComplete, transactionsProcessed
           />
 
           <img 
-            src="/assets/videos/TRUMP VIDEO/trump.gif"
+            src="/assets/videos/loading_video.gif"
             alt="Loading Animation"
             className="w-full h-auto"
           />
