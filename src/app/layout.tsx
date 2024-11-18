@@ -1,5 +1,6 @@
 'use client';
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/react"
 import { ClientWrapper } from '@/components/ClientWrapper';
 import localFont from 'next/font/local';
 import "./globals.css";
