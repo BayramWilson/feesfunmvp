@@ -341,7 +341,7 @@ export default function Home() {
           </h2>
 
           {/* Input field with both buttons */}
-          <div className="relative">
+          <div className="relative max-w-2xl w-full">
             <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
               <div className="flex">
                 <input
@@ -380,20 +380,21 @@ export default function Home() {
             />
           )}
 
-          {/* Token Address Box - First */}
-          <div className="relative max-w-xl mx-auto mt-8">
+          {/* Token Address Box */}
+          <div className="relative max-w-2xl w-full mt-8">
             <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400">
               <div className="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg rounded-lg 
-                            bg-white/90 dark:bg-gray-800/90 pr-32 flex items-center font-mondwest">
-                <span className="text-gray-600 dark:text-gray-400 mr-2">Token Address:</span>
-                <span className="text-gray-800 dark:text-gray-200">Placeholder</span>
+                            bg-black pr-32 flex items-center font-mondwest">
+                <span className="text-gray-400 mr-2">Token Address:</span>
+                <span className="text-gray-200">Placeholder</span>
               </div>
               <button
                 onClick={copyToClipboard}
-                className="absolute right-1 top-1/2 transform -translate-y-1/2
-                         bg-[#14F195] text-gray-900 px-2 sm:px-2.5 md:px-3 py-1 sm:py-1.5 md:py-2 
-                         rounded-lg text-xs sm:text-sm md:text-base
-                         hover:bg-[#0DD584] transition-colors font-mondwest"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2
+                         px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 text-sm sm:text-base md:text-lg 
+                         bg-solana-green text-gray-900 rounded-lg
+                         hover:bg-[#0DD584] disabled:bg-solana-green/50 
+                         transition-colors font-mondwest"
               >
                 Copy
               </button>
@@ -427,7 +428,7 @@ export default function Home() {
             <h3 className="text-lg sm:text-xl font-mondwest mb-4 text-white text-center">
               Powered by:
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto px-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full">
               {[
                 '/assets/newlogos/BBqyuDPm_400x400.png',
                 '/assets/newlogos/bullx.png',
@@ -455,7 +456,7 @@ export default function Home() {
           </div>
 
           {/* Add DuneWatch below logos */}
-          <div className=" grid grid-cols-1 md:grid-cols-2 justify-center gap-4 mt-8">
+          <div className=" grid grid-cols-1 md:grid-cols-2 justify-center gap-1 mt-8">
             <DuneWatch />
             <PumpFunRevenue />
           </div>
