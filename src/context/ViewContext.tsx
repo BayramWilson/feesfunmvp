@@ -1,11 +1,13 @@
 'use client';
-import { createContext } from 'react';
+import { createContext, Dispatch, SetStateAction } from 'react';
+
+type ViewType = string;
 
 interface ViewContextType {
-  currentView: string;
-  setCurrentView: (view: string) => void;
+  currentView: ViewType;
+  setCurrentView: Dispatch<SetStateAction<ViewType>>;
   hideBottomIcons: boolean;
-  setHideBottomIcons: (hide: boolean) => void;
+  setHideBottomIcons: Dispatch<SetStateAction<boolean>>;
 }
 
 export const ViewContext = createContext<ViewContextType>({

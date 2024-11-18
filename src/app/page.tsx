@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useContext } from 'react';
+import { useState, useRef, useContext, useEffect } from 'react';
 import LoadingScreen from '@/components/LoadingScreen';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Results from '@/components/Results';
@@ -32,7 +32,12 @@ export default function Home() {
   const currentPage = searchParams.get('page');
   const [showingResults, setShowingResults] = useState(false);
   const [botFees, setBotFees] = useState<number | null>(null);
-  const { setCurrentView } = useContext(ViewContext);
+  const { setCurrentView, setHideBottomIcons } = useContext(ViewContext);
+
+  useEffect(() => {
+    setHideBottomIcons(true);
+    return () => setHideBottomIcons(false);
+  }, [setHideBottomIcons]);
 
   const calculateFees = async () => {
     if (!walletAddress) {

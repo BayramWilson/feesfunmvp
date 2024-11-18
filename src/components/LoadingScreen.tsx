@@ -7,14 +7,15 @@ interface LoadingScreenProps {
 }
 
 export default function LoadingScreen({ onLoadingComplete, transactionsProcessed }: LoadingScreenProps) {
-  const { setCurrentView } = useContext(ViewContext);
+  const { setCurrentView, setHideBottomIcons } = useContext(ViewContext);
   const [percentage, setPercentage] = useState(0);
   const startTimeRef = useRef(Date.now());
   const timerRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     setCurrentView('loading');
-  }, []);
+    setHideBottomIcons(false);
+  }, [setCurrentView, setHideBottomIcons]);
 
   useEffect(() => {
     // First minute: progress to 80%

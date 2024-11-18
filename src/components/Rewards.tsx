@@ -178,13 +178,27 @@ export default function Rewards({ setActiveTab, setShowShareModal }: RewardsProp
 
         {!isEligible && (
           <>
-            <p className="text-2xl text-white">Share your results on Twitter to become eligible!</p>
-            <p className="text-2xl text-white">Only submit when the connected wallet is the analyzed wallet.</p>
-            <p className="text-2xl text-white">First come first serve!</p>
-            <div className="p-[1px] rounded-md bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 w-80 mx-auto">
+            <div className="space-y-3 text-white max-w-[90%] mx-auto">
+              <p className="text-sm sm:text-base md:text-lg">
+                Verify wallet ownership to qualify.
+              </p>
+              <p className="text-sm sm:text-base md:text-lg">
+                Share your scorecard on Twitter with <span className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">$FUN</span> and <span className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">@pumpfundao</span>, and submit the tweet link.
+              </p>
+              <p className="text-sm sm:text-base md:text-lg">
+                Check back in 24 hours to claim rewards if you're among the first <span className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">10,000</span>.
+              </p>
+              <p className="text-sm sm:text-base md:text-lg">
+                First come first served.
+              </p>
+              <p className="text-sm sm:text-base md:text-lg">
+                Keep trading on pumpfun for more <span className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">$FUN</span> and potential rewards.
+              </p>
+            </div>
+            <div className="p-[1px] rounded-md bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 w-[180px] sm:w-[260px] md:w-[340px] mx-auto">
               <button 
                 onClick={() => setShowShareModal(true)}
-                className="w-full py-2 rounded-md font-mondwest text-xl bg-black text-white hover:bg-opacity-80 transition-all"
+                className="w-full py-1.5 sm:py-2 md:py-3 rounded-md font-mondwest text-sm sm:text-base md:text-lg bg-black text-white hover:bg-opacity-80 transition-all"
               >
                 Share
               </button>

@@ -15,13 +15,15 @@ const mondwest = localFont({
   variable: '--font-mondwest'
 });
 
+type ViewType = 'wallet-entry' | 'results' | 'rewards' | 'claim' | 'loading';
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const router = useRouter();
-  const [currentView, setCurrentView] = useState('wallet-entry');
+  const [currentView, setCurrentView] = useState<ViewType>('wallet-entry');
   const [hideBottomIcons, setHideBottomIcons] = useState(false);
 
   const handleReset = () => {
@@ -36,7 +38,7 @@ export default function RootLayout({
           <div className="relative min-h-screen flex flex-col">
             <ViewContext.Provider value={{ 
               currentView, 
-              setCurrentView,
+              setCurrentView: setCurrentView as React.Dispatch<React.SetStateAction<string>>,
               hideBottomIcons,
               setHideBottomIcons 
             }}>
@@ -83,10 +85,13 @@ export default function RootLayout({
                   hidden lg:block chipmunk-visible"
               />
 
-              {/* Social Media Icons - Show everywhere except wallet entry and when share modal is open */}
-              {currentView !== 'wallet-entry' && !hideBottomIcons && (
-                <div className="fixed bottom-12 left-0 right-0 z-50">
-                  <div className="hidden sm:flex justify-center gap-4 sm:gap-6">
+              {/* Social Media Icons */}
+              {currentView === 'wallet-entry' && 
+               !hideBottomIcons && (
+                <div className={`fixed bottom-12 left-0 right-0 z-50 
+                  ${hideBottomIcons ? 'hidden' : ''}
+                `}>
+                  <div className="hidden min-[1000px]:flex justify-center gap-4 sm:gap-6">
                     <div className="p-[1px] rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
                       <a href="#" className="p-2 sm:p-2.5 md:p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
                         <img 
