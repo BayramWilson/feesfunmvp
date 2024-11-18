@@ -45,6 +45,7 @@ export default function Home() {
     let botFeesAccumulator = 0;
     const startTime = Date.now();
     const TIME_LIMIT = 600000;
+
     const BATCH_SIZE = 40;
     let before: string | undefined = undefined;
     const processedTxs = new Set();
@@ -157,8 +158,8 @@ export default function Home() {
 
         // Update UI
         setTotalFees(totalFeesAccumulator / 1e9);
-        setDexFees(raydiumFeesAccumulator / 1e9);
-        setBotFees(botFeesAccumulator);
+        setDexFees(botFeesAccumulator);
+        setBotFees(raydiumFeesAccumulator / 1e9);
         setTransactionsProcessed(processedTxs.size);
         setProgress(
           `Processing transactions... ${processedTxs.size} unique transactions found (${Math.round((Date.now() - startTime) / 1000)}s elapsed)`
