@@ -8,6 +8,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { ViewContext } from '@/context/ViewContext';
 import DuneWatch from '@/components/DuneWatch';
+import PumpFunRevenue from '@/components/PumpFunRevenue';
 
 const PUMP_FUN_PROGRAM_ID = '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
 const RAYDIUM_PROGRAM_ID = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8';
@@ -454,8 +455,9 @@ export default function Home() {
           </div>
 
           {/* Add DuneWatch below logos */}
-          <div className="mt-8 flex justify-center">
+          <div className=" grid grid-cols-1 md:grid-cols-2 justify-center gap-4 mt-8">
             <DuneWatch />
+            <PumpFunRevenue />
           </div>
         </div>
       )}

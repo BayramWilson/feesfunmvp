@@ -1,32 +1,27 @@
-'use client';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export default function DuneWatch() {
-  const [jupiterRevenue, setJupiterRevenue] = useState<number | null>(null);
-  const [photonFees, setPhotonFees] = useState<number | null>(null);
+export default function PumpFunRevenue() {
   const [displayRevenue, setDisplayRevenue] = useState<number>(0);
   const [targetRevenue, setTargetRevenue] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchDuneData() {
+    async function fetchPumpFunRevenue() {
       try {
-        const response = await fetch('/api/dune');
+        const response = await fetch('/api/pumpfun-revenue');
         const data = await response.json();
-        const total = Number(data.jupiterRevenue || 0) + Number(data.photonFees || 0);
+        const total = Number(data.totalRevenueUSD || 0);
         
-        setJupiterRevenue(Number(data.jupiterRevenue));
-        setPhotonFees(Number(data.photonFees));
-        setDisplayRevenue(Math.max(0, total - 100000000)); // Start 10M less
+        setDisplayRevenue(Math.max(0, total - 100000)); // Start animation from slightly lower
         setTargetRevenue(total);
       } catch (error) {
-        console.error('Error fetching Dune data:', error);
+        console.error('Error fetching PUMPFUN revenue:', error);
       } finally {
         setIsLoading(false);
       }
     }
 
-    fetchDuneData();
+    fetchPumpFunRevenue();
   }, []);
 
   useEffect(() => {
@@ -49,12 +44,12 @@ export default function DuneWatch() {
             clearInterval(timer);
             return targetRevenue;
           }
-          return prev + (remaining * 0.05 * currentMultiplier); // Increased to 5%
+          return prev + (remaining * 0.05 * currentMultiplier);
         });
 
         if ((Date.now() - startTime) % 2000 < stepDuration) {
-          currentMultiplier *= 4; // Increased to 4x
-          stepDuration = Math.max(stepDuration / 3, 1); // Changed to /3
+          currentMultiplier *= 4;
+          stepDuration = Math.max(stepDuration / 3, 1);
           clearInterval(timer);
           createInterval();
         }
@@ -66,21 +61,17 @@ export default function DuneWatch() {
   }, [targetRevenue, displayRevenue]);
 
   if (isLoading) {
-    return <div>Loading revenue data...</div>;
+    return <div className="text-white text-center">Loading PUMPFUN revenue...</div>;
   }
 
   return (
     <div className="p-3 rounded-lg bg-black/80">
-      <div className="mb-4">
-        <h2 className="text-xl font-mondwest text-white mb-2 text-center">Total Trading Bot Revenue</h2>
-        <div className="text-4xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text text-center">
-          ${displayRevenue.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-        </div>
+      <h2 className="text-xl font-mondwest text-white mb-2 text-center">
+        PUMPFUN Revenue
+      </h2>
+      <div className="text-4xl font-mondwest bg-gradient-to-r from-[#9945FF] to-[#14F195] text-transparent bg-clip-text text-center">    
+        ${displayRevenue.toLocaleString('en-US', { maximumFractionDigits: 0 })}
       </div>
-
-      
-      {/* Rest of your component remains the same */}
     </div>
   );
 }
-
