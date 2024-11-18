@@ -337,7 +337,7 @@ export default function Home() {
           </h1>
           
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 font-mondwest bg-gradient-to-r from-purple-500 via-blue-400 to-green-500 text-transparent bg-clip-text">
-            Check How Many You Have Been Paying?
+            Degening Is Fun, Check How Much FeesYou Have Lost on PumpFun And Co And Get Your Reward!
           </h2>
 
           {/* Input field with both buttons */}
