@@ -26,7 +26,7 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
 
   useEffect(() => {
     setHideBottomIcons(true);
-    const randomNum = Math.floor(Math.random() * 7) + 1;
+    const randomNum = Math.floor(Math.random() * 5) + 1;
     setRandomImage(randomNum);
     return () => setHideBottomIcons(false);
   }, []);
