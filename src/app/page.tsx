@@ -372,14 +372,19 @@ export default function Home() {
         </div>
       ) : (
         <div className="max-w-2xl w-full space-y-8 relative z-10 text-center">
-          <img 
-            src="/assets/logo_chipz.png" 
+          <div className="flex flex-col items-center">
+            <img 
+              src="/assets/logo_chipz.png" 
             alt="Fees.Fun" 
             className="mx-auto w-[200px] sm:w-[250px] md:w-[300px] h-auto px-2" 
-          />
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-4 font-mondwest bg-solana-gradient text-transparent bg-clip-text">
+            />
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mt-0 mb-4 font-mondwest bg-solana-gradient text-transparent bg-clip-text">
             Fees.Fun
           </h1>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 font-mondwest bg-gradient-to-r from-purple-500 via-blue-400 to-green-500 text-transparent bg-clip-text">
+            Degening Is Fun, Check How Much FeesYou Have Lost on PumpFun And Co And Get Your Reward!
+          </h2>
+          </div>
 
           {/* Search Input and Buttons */}
           <div className="relative max-w-2xl w-full">
