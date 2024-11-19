@@ -461,7 +461,7 @@ export default function Home() {
           {/* Social Media Icons - Now before Powered By */}
           <div className="flex justify-center gap-6 mt-8">
             <div className="p-[1px] rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
-              <a href="#" className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
+              <a href="https://jup.ag/swap/SOL-9dELs5mcif6jBgVxr81hN4rvBvXkybMZCx8TfuZLpump" className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
                 <img 
                   src="/assets/socials/Token-64x64.svg" 
                   alt="Token" 
@@ -470,7 +470,7 @@ export default function Home() {
               </a>
             </div>
             <div className="p-[1px] rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
-              <a href="#" className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
+              <a href="https://dexscreener.com/solana/bxf1haw9w4nvhg83hjghwvy8hdjbjafnkb81knpfbvtz" className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
                 <img 
                   src="/assets/socials/dex-screener-seeklogo.svg" 
                   alt="DexScreener" 

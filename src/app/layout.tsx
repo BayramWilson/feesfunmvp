@@ -94,7 +94,7 @@ export default function RootLayout({
                 `}>
                   <div className="hidden min-[1000px]:flex justify-center gap-4 sm:gap-6">
                     <div className="p-[1px] rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
-                      <a href="#" className="p-2 sm:p-2.5 md:p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
+                      <a href="https://jup.ag/swap/9dELs5mcif6jBgVxr81hN4rvBvXkybMZCx8TfuZLpump-SOL" className="p-2 sm:p-2.5 md:p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
                         <img 
                           src="/assets/socials/Token-64x64.svg" 
                           alt="Token" 
@@ -103,7 +103,7 @@ export default function RootLayout({
                       </a>
                     </div>
                     <div className="p-[1px] rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
-                      <a href="#" className="p-2 sm:p-2.5 md:p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
+                      <a href="https://dexscreener.com/solana/bxf1haw9w4nvhg83hjghwvy8hdjbjafnkb81knpfbvtz" className="p-2 sm:p-2.5 md:p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors block">
                         <img 
                           src="/assets/socials/dex-screener-seeklogo.svg" 
                           alt="DexScreener" 
