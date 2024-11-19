@@ -220,7 +220,7 @@ export default function Home() {
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText("Placeholder");
+      await navigator.clipboard.writeText("9dELs5mcif6jBgVxr81hN4rvBvXkybMZCx8TfuZLpump");
       // Optionally add some feedback that copying worked
     } catch (err) {
       console.error('Failed to copy text: ', err);

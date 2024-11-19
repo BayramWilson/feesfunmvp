@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 
 export default function PumpFunRevenue() {
   const [displayRevenue, setDisplayRevenue] = useState<number>(210000000);
-  const [targetRevenue, setTargetRevenue] = useState<number | null>(210000000);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Remove API call since we're using static values
     setIsLoading(false);
+    setError(null);
   }, []);
 
   return (

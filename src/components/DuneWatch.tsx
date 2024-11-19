@@ -3,12 +3,32 @@ import { useEffect, useState } from 'react';
 
 export default function DuneWatch() {
   const [displayRevenue, setDisplayRevenue] = useState<number>(490000000);
-  const [targetRevenue, setTargetRevenue] = useState<number | null>(490000000);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Remove API call since we're using static values
-    setIsLoading(false);
+    async function fetchDuneData() {
+      try {
+        const response = await fetch('/api/dune');
+        const data = await response.json();
+        console.log('DuneWatch API Response:', data);
+        
+        if (data.error) {
+          console.error('DuneWatch API Error:', data.error);
+          return;
+        }
+
+        const total = Number(data.jupiterRevenue || 0) + Number(data.photonFees || 0);
+        console.log('Total Revenue Calculated:', total);
+        
+        setDisplayRevenue(total || 490000000); // Fallback to static value
+      } catch (error) {
+        console.error('Error fetching Dune data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchDuneData();
   }, []);
 
   return (
