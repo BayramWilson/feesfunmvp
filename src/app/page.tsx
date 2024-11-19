@@ -9,6 +9,7 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { ViewContext } from '@/context/ViewContext';
 import DuneWatch from '@/components/DuneWatch';
 import PumpFunRevenue from '@/components/PumpFunRevenue';
+import Leaderboard from '@/components/Leaderboard';
 
 const PUMP_FUN_PROGRAM_ID = '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
 const RAYDIUM_PROGRAM_ID = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8';
@@ -33,6 +34,7 @@ export default function Home() {
   const [showingResults, setShowingResults] = useState(false);
   const [botFees, setBotFees] = useState<number | null>(null);
   const { setCurrentView, setHideBottomIcons } = useContext(ViewContext);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   useEffect(() => {
     setHideBottomIcons(true);
@@ -317,6 +319,38 @@ export default function Home() {
           <source src="/assets/videos/output.webm" type="video/webm" />
         </video>
       </div>
+
+      {/* Add Leaderboard Button near the top */}
+      <div className="fixed top-4 z-50">
+        <div className="p-[1px] rounded-lg bg-gradient-to-r from-[#9945FF] to-[#14F195]">
+          <button
+            onClick={() => setShowLeaderboard(!showLeaderboard)}
+            className="px-6 py-2 rounded-lg bg-black hover:bg-gray-900 transition-colors font-mondwest text-white"
+          >
+            {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
+          </button>
+        </div>
+      </div>
+
+      {/* Leaderboard Modal */}
+      {showLeaderboard && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/80">
+          <div className="relative w-full max-w-4xl p-4 md:p-8">
+            {/* Close button */}
+            <button
+              onClick={() => setShowLeaderboard(false)}
+              className="absolute top-2 right-2 p-2 text-white hover:text-gray-300"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            {/* Leaderboard Component */}
+            <Leaderboard />
+          </div>
+        </div>
+      )}
 
       {isLoading ? (
         <LoadingScreen 

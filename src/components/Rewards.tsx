@@ -142,7 +142,7 @@ export default function Rewards({ setActiveTab, setShowShareModal }: RewardsProp
       <div className="text-center space-y-8 pt-15">
         <h2 className="text-4xl font-mondwest">
           <span className="bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 text-transparent bg-clip-text">
-            {isEligible ? "Congrats, you have been qualified for $FUN!" : "You are not eligible for $FUN"}
+            {isEligible ? "Congrats, you are all set for potential free $FUN tokens. Check back tomorrow to see whether you made it under the first 10,000 people. First come first served." : "You are not eligible for $FUN"}
           </span>
         </h2>
 

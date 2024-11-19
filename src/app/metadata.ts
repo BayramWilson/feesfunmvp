@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Solana Fee Calculator",
-  description: "Calculate total transaction fees for any Solana wallet",
+  title: "Pumpfun and Trading Bots Fees Checker",
+  description: "Calculate total fees lost to PumpFun and co",
 }; 

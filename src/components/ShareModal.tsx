@@ -26,7 +26,7 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
 
   useEffect(() => {
     setHideBottomIcons(true);
-    const randomNum = Math.floor(Math.random() * 5) + 1;
+    const randomNum = Math.floor(Math.random() * 7) + 1;
     setRandomImage(randomNum);
     return () => setHideBottomIcons(false);
   }, []);
@@ -217,34 +217,28 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
 
         const { imageUrl } = await response.json();
 
-        // Create tweet text
-        const tweetText = `I've lost ${combinedTotal.toFixed(2)} SOL ($${(combinedTotal * solPrice).toFixed(2)}) in fees on @PumpFunDAO! Check your fees at https://fees.fun 🚀`;
+        // Updated tweet text
+        const tweetText = `I've lost ${combinedTotal.toFixed(2)} SOL ($${(combinedTotal * solPrice).toFixed(2)}) in fees to @PumpFunDAO and co. I love degening and having so much fun making pumpfun and trading bots rich. Have $FUN and keep clicking, we will be rich one day!
+
+Check how much fees you lost at https://fees.fun 🚀`;
         
         // Check if mobile device
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         
         if (isMobile) {
-          // For iOS devices
           if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-            window.location.href = `twitter://post?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(imageUrl)}`;
-            
-            // Fallback to web if app doesn't open after 1 second
+            window.location.href = `twitter://post?text=${encodeURIComponent(tweetText)}`;
             setTimeout(() => {
-              window.location.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(imageUrl)}`;
+              window.location.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
             }, 1000);
-          } 
-          // For Android devices
-          else if (/Android/i.test(navigator.userAgent)) {
-            window.location.href = `intent://post?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(imageUrl)}#Intent;scheme=twitter;package=com.twitter.android;end`;
-            
-            // Fallback to web if app doesn't open after 1 second
+          } else if (/Android/i.test(navigator.userAgent)) {
+            window.location.href = `intent://post?text=${encodeURIComponent(tweetText)}#Intent;scheme=twitter;package=com.twitter.android;end`;
             setTimeout(() => {
-              window.location.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(imageUrl)}`;
+              window.location.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
             }, 1000);
           }
         } else {
-          // Desktop behavior remains the same
-          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(imageUrl)}`, '_blank');
+          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`, '_blank');
         }
       } catch (error) {
         console.error('Error sharing:', error);
@@ -286,7 +280,7 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
         return;
       }
 
-      // Insert data into Supabase
+      // Insert data into Supabase with timestamp
       const { error: insertError } = await supabase
         .from('fees')
         .insert([
@@ -294,7 +288,8 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
             wallet: scannedWallet,
             fee: combinedTotal,
             link: tweetLink,
-            handle: twitterHandle
+            handle: twitterHandle,
+            created_at: new Date().toISOString()
           }
         ]);
 
