@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ShareModal from './ShareModal';
 import Rewards from './Rewards';
 import Claim from './Claim';
+import { supabase } from '@/utils/supabase';
 
 interface ResultsProps {
   error: string | null;
@@ -51,9 +52,36 @@ export default function Results({
     }
   };
 
+  const storeScanResults = async () => {
+    if (!walletAddress || totalFees === null) return;
+
+    try {
+      const { error } = await supabase
+        .from('wallet_scans')
+        .upsert({
+          wallet_address: walletAddress,
+          total_fees: totalFees,
+          dex_fees: dexFees,
+          bot_fees: botFees,
+          transactions_count: transactionsProcessed,
+          last_scanned_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error storing scan results:', error);
+    }
+  };
+
   useEffect(() => {
     fetchSolPrice();
   }, []);
+
+  useEffect(() => {
+    if (totalFees !== null) {
+      storeScanResults();
+    }
+  }, [totalFees, dexFees, botFees, transactionsProcessed]);
 
   // Calculate the true total (all fees combined)
   const combinedTotal = (totalFees || 0) + (botFees || 0);

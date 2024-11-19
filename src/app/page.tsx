@@ -10,6 +10,7 @@ import { ViewContext } from '@/context/ViewContext';
 import DuneWatch from '@/components/DuneWatch';
 import PumpFunRevenue from '@/components/PumpFunRevenue';
 import Leaderboard from '@/components/Leaderboard';
+import CheckCachedResults from '@/components/CheckCachedResults';
 
 const PUMP_FUN_PROGRAM_ID = '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
 const RAYDIUM_PROGRAM_ID = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8';
@@ -375,11 +376,7 @@ export default function Home() {
             Fees.Fun
           </h1>
           
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 font-mondwest bg-gradient-to-r from-purple-500 via-blue-400 to-green-500 text-transparent bg-clip-text">
-            Degening Is Fun, Check How Much FeesYou Have Lost on PumpFun And Co And Get Your Reward!
-          </h2>
 
-          {/* Input field with both buttons */}
           <div className="relative max-w-2xl w-full">
             <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
               <div className="flex">
@@ -392,6 +389,16 @@ export default function Home() {
                            bg-white/90 dark:bg-gray-800/90 font-mondwest"
                 />
                 <div className="flex gap-2 p-2 bg-white/90 dark:bg-gray-800/90 rounded-r-lg">
+                  <CheckCachedResults 
+                    walletToCheck={walletAddress}
+                    onResultsFound={(results) => {
+                      setTotalFees(results.total_fees);
+                      setDexFees(results.dex_fees);
+                      setBotFees(results.bot_fees);
+                      setTransactionsProcessed(results.transactions_count);
+                      setShowingResults(true);
+                    }}
+                  />
                   <button
                     onClick={handleSearch}
                     disabled={!walletAddress || loading}
