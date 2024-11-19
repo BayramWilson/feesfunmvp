@@ -105,7 +105,11 @@ export default function LoadingScreen({ onLoadingComplete, transactionsProcessed
           
         </div>
         
-        {transactionsProcessed >= 1000 && (
+        {transactionsProcessed >= 3000 ? (
+          <div className="text-2xl font-mondwest bg-gradient-to-br from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
+            Hold my hand...never gonna give you up nigga, almost through.
+          </div>
+        ) : transactionsProcessed >= 1000 && (
           <div className="text-2xl font-mondwest bg-gradient-to-br from-[#9945FF] to-[#14F195] text-transparent bg-clip-text">
             Oh boy that's a lot of transactions, I'm just an AI...gimme time to analyze your shitty wallet.
           </div>
