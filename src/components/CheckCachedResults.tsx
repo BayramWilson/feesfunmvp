@@ -2,11 +2,16 @@ import { useState } from 'react';
 import { supabase } from '@/utils/supabase';
 
 interface CheckCachedResultsProps {
-  onResultsFound: (results: any) => void;
   walletToCheck: string;
+  onResultsFound: (results: any) => void;
+  className?: string;
 }
 
-export default function CheckCachedResults({ onResultsFound, walletToCheck }: CheckCachedResultsProps) {
+export default function CheckCachedResults({ 
+  walletToCheck, 
+  onResultsFound,
+  className 
+}: CheckCachedResultsProps) {
   const [isChecking, setIsChecking] = useState(false);
 
   const checkCachedResults = async () => {
@@ -29,10 +34,10 @@ export default function CheckCachedResults({ onResultsFound, walletToCheck }: Ch
   };
 
   return (
-    <button 
+    <button
       onClick={checkCachedResults}
       disabled={isChecking}
-      className="px-6 py-2 bg-[#2A2A2A] text-white rounded-lg hover:bg-[#3A3A3A] transition-colors disabled:opacity-50"
+      className={className}
     >
       {isChecking ? 'Checking...' : 'Check Cache'}
     </button>

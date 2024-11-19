@@ -322,16 +322,16 @@ export default function Home() {
       </div>
 
       {/* Add Leaderboard Button near the top */}
-      <div className="fixed top-4 z-50">
+{/*       <div className="fixed top-4 z-50">
         <div className="p-[1px] rounded-lg bg-gradient-to-r from-[#9945FF] to-[#14F195]">
-          <button
+         <button
             onClick={() => setShowLeaderboard(!showLeaderboard)}
             className="px-6 py-2 rounded-lg bg-black hover:bg-gray-900 transition-colors font-mondwest text-white"
           >
             {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* Leaderboard Modal */}
       {showLeaderboard && (
@@ -371,24 +371,29 @@ export default function Home() {
           />
         </div>
       ) : (
-        <div className="max-w-2xl w-full space-y-8 relative z-10">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-center mb-4 font-mondwest bg-solana-gradient text-transparent bg-clip-text">
+        <div className="max-w-2xl w-full space-y-8 relative z-10 text-center">
+          <img 
+            src="/assets/logo_chipz.png" 
+            alt="Fees.Fun" 
+            className="mx-auto w-[200px] sm:w-[250px] md:w-[300px] h-auto px-2" 
+          />
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-4 font-mondwest bg-solana-gradient text-transparent bg-clip-text">
             Fees.Fun
           </h1>
-          
 
+          {/* Search Input and Buttons */}
           <div className="relative max-w-2xl w-full">
             <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 via-blue-400 to-green-500">
-              <div className="flex">
+              <div className="flex flex-col sm:flex-row">
                 <input
                   type="text"
                   value={walletAddress}
                   onChange={(e) => setWalletAddress(e.target.value)}
                   placeholder="Enter wallet address"
-                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg rounded-l-lg 
+                  className="flex-1 px-4 py-3 text-base sm:text-lg rounded-t-lg sm:rounded-l-lg sm:rounded-tr-none
                            bg-white/90 dark:bg-gray-800/90 font-mondwest"
                 />
-                <div className="flex gap-2 p-2 bg-white/90 dark:bg-gray-800/90 rounded-r-lg">
+                <div className="flex flex-col sm:flex-row gap-2 p-2 bg-white/90 dark:bg-gray-800/90 rounded-b-lg sm:rounded-r-lg sm:rounded-bl-none">
                   <CheckCachedResults 
                     walletToCheck={walletAddress}
                     onResultsFound={(results) => {
@@ -398,13 +403,14 @@ export default function Home() {
                       setTransactionsProcessed(results.transactions_count);
                       setShowingResults(true);
                     }}
+                    className="w-full sm:w-auto md:px-6 md:py-2 px-4 py-2 bg-[#2A2A2A] text-white rounded-lg 
+                              hover:bg-[#3A3A3A] transition-colors disabled:opacity-50"
                   />
                   <button
                     onClick={handleSearch}
                     disabled={!walletAddress || loading}
-                    className="px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 text-sm sm:text-base md:text-lg 
-                             bg-solana-green text-gray-900 rounded-lg
-                             hover:bg-[#0DD584] disabled:bg-solana-green/50 
+                    className="w-full sm:w-auto md:px-6 md:py-2 px-4 py-2 text-sm sm:text-base md:text-lg 
+                             bg-solana-green text-gray-900 rounded-lg hover:bg-[#0DD584] disabled:bg-solana-green/50 
                              transition-colors font-mondwest"
                   >
                     {loading ? 'Calculating...' : 'Search'}
