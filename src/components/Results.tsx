@@ -84,7 +84,7 @@ export default function Results({
   }, [totalFees, dexFees, botFees, transactionsProcessed]);
 
   // Calculate the true total (all fees combined)
-  const combinedTotal = (totalFees || 0) + (botFees || 0);
+  const combinedTotal = (dexFees || 0) + (botFees || 0);
 
   return (
     <div className="p-[6px] rounded-lg bg-gradient-to-br from-solana-purple to-solana-green w-full 

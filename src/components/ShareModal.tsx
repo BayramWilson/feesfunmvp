@@ -31,7 +31,7 @@ export default function ShareModal({ totalFees, dexFees, botFees, onClose, solPr
     return () => setHideBottomIcons(false);
   }, []);
 
-  const combinedTotal = (totalFees || 0) + (botFees || 0);
+  const combinedTotal = (dexFees || 0) + (botFees || 0);
 
   const extractTwitterHandle = (tweetUrl: string): string | null => {
     try {
