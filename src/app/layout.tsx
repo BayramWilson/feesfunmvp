@@ -117,6 +117,7 @@ export default function RootLayout({
             </ViewContext.Provider>
           </div>
         </ClientWrapper>
+        <Analytics />
       </body>
     </html>
   );
