@@ -399,7 +399,7 @@ export default function Home() {
                            bg-white/90 dark:bg-gray-800/90 font-mondwest"
                 />
                 <div className="flex flex-col sm:flex-row gap-2 p-2 bg-white/90 dark:bg-gray-800/90 rounded-b-lg sm:rounded-r-lg sm:rounded-bl-none">
-                  <CheckCachedResults 
+              {/*     <CheckCachedResults 
                     walletToCheck={walletAddress}
                     onResultsFound={(results) => {
                       setTotalFees(results.total_fees);
@@ -410,7 +410,7 @@ export default function Home() {
                     }}
                     className="w-full sm:w-auto md:px-6 md:py-2 px-4 py-2 bg-[#2A2A2A] text-white rounded-lg 
                               hover:bg-[#3A3A3A] transition-colors disabled:opacity-50"
-                  />
+                  /> */}
                   <button
                     onClick={handleSearch}
                     disabled={!walletAddress || loading}
