@@ -103,7 +103,7 @@ The application uses pagination to efficiently process large transaction histori
 
 ## 🤝 Contributing
 
-Contributions are welcome! Here's how you can contribute:
+Contributions are very welcome! Here's how you can contribute:
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
